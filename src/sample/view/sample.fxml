@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="700.0" style="-fx-background-color: #2E3358;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+   <children>
+      <AnchorPane layoutY="103.0" prefHeight="297.0" prefWidth="700.0" style="-fx-background-color: #fafafa;">
+         <children>
+            <TextField fx:id="login_field" layoutX="194.0" layoutY="77.0" prefHeight="25.0" prefWidth="330.0" promptText="Логин" style="-fx-background-color: #fafafa; -fx-border-color: silver; -fx-border-radius: 5;">
+               <font>
+                  <Font size="17.0" />
+               </font>
+            </TextField>
+            <Label layoutX="232.0" layoutY="14.0" text="Авторизация" textFill="#aeacae">
+               <font>
+                  <Font name="Bodoni MT" size="41.0" />
+               </font>
+            </Label>
+            <Button fx:id="authSigInButton" layoutX="322.0" layoutY="210.0" mnemonicParsing="false" style="-fx-background-color: #6495ED;" text="Войти" textFill="WHITE">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Button>
+            <PasswordField fx:id="password_field" layoutX="193.0" layoutY="147.0" prefHeight="39.0" prefWidth="330.0" promptText="Пароль" style="-fx-border-color: silver; -fx-border-radius: 5;">
+               <font>
+                  <Font size="17.0" />
+               </font>
+            </PasswordField>
+            <Button fx:id="loginSingUpButton" layoutX="14.0" layoutY="249.0" mnemonicParsing="false" style="-fx-background-color: #6495ED;" text="Зарегистрироваться" textFill="WHITE" />
+         </children>
+      </AnchorPane>
+      <Label layoutX="68.0" layoutY="43.0" text="Вход в систему отчётности ХАИ" textFill="#ebe9e9">
+         <font>
+            <Font name="Bauhaus 93" size="41.0" />
+         </font>
+      </Label>
+   </children>
+</AnchorPane>
