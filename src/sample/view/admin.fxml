@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollBar?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="599.0" prefWidth="739.0" style="-fx-background-color: #2E3358;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.AdminFormController">
+   <children>
+      <AnchorPane layoutX="-4.0" layoutY="63.0" prefHeight="536.0" prefWidth="745.0" style="-fx-background-color: #fff;">
+         <children>
+            <Button fx:id="goOtchetButton" layoutX="14.0" layoutY="87.0" mnemonicParsing="false" text="Сформировать отчёт" />
+            <TextField fx:id="facultetNumber" layoutX="14.0" layoutY="14.0" promptText="Номер факультета" />
+            <TextField fx:id="groupNumber" layoutX="14.0" layoutY="49.0" promptText="номер кафедры" />
+            <Button fx:id="showAllReports" layoutX="15.0" layoutY="497.0" mnemonicParsing="false" text="Показать все отчёты" />
+            <Button fx:id="deleteButton" layoutX="341.0" layoutY="497.0" mnemonicParsing="false" text="Удалить " />
+            <Button fx:id="addButton" layoutX="163.0" layoutY="497.0" mnemonicParsing="false" text="Добавить" />
+            <Button fx:id="editButton" layoutX="246.0" layoutY="497.0" mnemonicParsing="false" text="Изменить" />
+            <Button fx:id="importInExcelButton" layoutX="417.0" layoutY="497.0" mnemonicParsing="false" text="Импортировать отчёт в Excel" />
+            <ScrollBar fx:id="scrollBaR" layoutX="130.0" layoutY="131.0" orientation="VERTICAL" prefHeight="322.0" prefWidth="15.0" />
+         </children>
+      </AnchorPane>
+      <Label layoutX="211.0" layoutY="14.0" text="МЕНЮ АДМИНИСТРАТОРА" textFill="#f2efef">
+         <font>
+            <Font name="Yu Gothic UI Bold" size="25.0" />
+         </font>
+      </Label>
+      <TableView fx:id="tableViewReportsTable" layoutX="165.0" layoutY="70.0" prefHeight="472.0" prefWidth="568.0">
+         <columns>
+            <TableColumn fx:id="numberColumnInTable" prefWidth="42.0" text="№" />
+            <TableColumn fx:id="NameColumnEventInTable" prefWidth="154.0" text="Найменування заходiв" />
+            <TableColumn fx:id="dataColumnInTable" text="Срок " />
+            <TableColumn fx:id="authorColumnInTable" prefWidth="221.0" text="Виконавцi " />
+            <TableColumn fx:id="rateColumnInTable" prefWidth="73.0" text="Вiдмiтка" />
+         </columns>
+      </TableView>
+   </children>
+</AnchorPane>
