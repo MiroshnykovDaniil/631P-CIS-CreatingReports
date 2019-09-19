@@ -62,6 +62,13 @@ public class Controller  extends  Const {
 
         int counter = 0;
 
+String adminLogin = login_field.getText(); // ТОЛЬКО СНАЧАЛА ЭТОТ ПОЛЬЗОВАТЕЛЬ ДОЛЖЕН БЫТЬ В БД
+String adminPassword = password_field.getText();
+
+if ( adminLogin.equals("tanya") && adminPassword.equals("123")) {
+    openNewScene("/sample/view/admin.fxml");
+    return;
+}
         while (true) {
             try {
                 if (!result.next()) break;
