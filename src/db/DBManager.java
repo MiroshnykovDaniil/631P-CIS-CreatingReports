@@ -25,7 +25,7 @@ public class DBManager {
 	private String login = "root";
 	private String pass = "";
 	
-	// ======== QUERIES =============
+	// ======== QUERIES ==============
 	
 	//USER
 	private static final String SQL_FIND_USER_BY_LOGIN = "SELECT * FROM user WHERE name=?";
