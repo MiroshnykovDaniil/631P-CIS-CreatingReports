@@ -9,30 +9,30 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="595.0" prefWidth="765.0" style="-fx-background-color: #2E3358;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.HomeController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="595.0" prefWidth="765.0" style="-fx-background-color: #2E3358;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.HomeController">
     <children>
         <Label layoutX="73.0" layoutY="6.0" prefHeight="40.0" prefWidth="620.0" text="Добро пожаловать в систему отчётности ХАИ" textFill="#ebe9e9">
             <font>
                 <Font name="Bauhaus 93" size="28.0" />
             </font>
         </Label>
-      <AnchorPane layoutY="57.0" prefHeight="538.0" prefWidth="773.0" style="-fx-background-color: #fff;">
+      <AnchorPane layoutY="70.0" prefHeight="538.0" prefWidth="765.0" style="-fx-background-color: #fff;">
          <children>
-            <Button fx:id="goOtchetButton" layoutX="14.0" layoutY="87.0" mnemonicParsing="false" text="Сформировать отчёт" />
+            <Button fx:id="goOtchetButton" layoutX="13.0" layoutY="497.0" mnemonicParsing="false" text="Сформировать отчёт" />
             <TextField fx:id="facultetNumber" layoutX="14.0" layoutY="14.0" promptText="Номер факультета" />
             <TextField fx:id="groupNumber" layoutX="14.0" layoutY="49.0" promptText="номер кафедры" />
-            <Button fx:id="showAllReports" layoutX="15.0" layoutY="497.0" mnemonicParsing="false" text="Показать все отчёты" />
-            <Button fx:id="importInExcelButton" layoutX="552.0" layoutY="497.0" mnemonicParsing="false" text="Импортировать отчёт в Excel" />
-            <ScrollBar fx:id="scrollBaR" layoutX="130.0" layoutY="131.0" orientation="VERTICAL" prefHeight="322.0" prefWidth="15.0" />
+            <Button fx:id="showAllReports" layoutX="14.0" layoutY="86.0" mnemonicParsing="false" text="Показать все отчёты" />
+            <Button fx:id="importInExcelButton" layoutX="567.0" layoutY="497.0" mnemonicParsing="false" text="Импортировать отчёт в Excel" />
+            <ScrollBar fx:id="scrollBaR" layoutX="144.0" layoutY="132.0" orientation="VERTICAL" prefHeight="322.0" prefWidth="23.0" />
          </children>
       </AnchorPane>
-      <TableView fx:id="tableViewReportsTable" layoutX="175.0" layoutY="70.0" prefHeight="473.0" prefWidth="570.0">
+      <TableView fx:id="tableViewReportsTable" layoutX="175.0" layoutY="120.0" prefHeight="423.0" prefWidth="570.0">
          <columns>
             <TableColumn fx:id="numberColumnInTable" prefWidth="42.0" text="№" />
             <TableColumn fx:id="NameColumnEventInTable" prefWidth="154.0" text="Найменування заходiв" />
             <TableColumn fx:id="dataColumnInTable" text="Срок " />
-            <TableColumn fx:id="authorColumnInTable" prefWidth="221.0" text="Виконавцi " />
             <TableColumn fx:id="rateColumnInTable" prefWidth="70.0" text="Вiдмiтка" />
+            <TableColumn fx:id="authorColumnInTable" prefWidth="221.0" text="Виконавцi " />
          </columns>
       </TableView>
     </children>
