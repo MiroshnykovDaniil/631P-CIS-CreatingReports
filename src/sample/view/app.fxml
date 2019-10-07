@@ -9,31 +9,38 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="595.0" prefWidth="765.0" style="-fx-background-color: #2E3358;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.HomeController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="595.0" prefWidth="865.0" style="-fx-background-color: #2E3358;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.HomeController">
     <children>
         <Label layoutX="73.0" layoutY="6.0" prefHeight="40.0" prefWidth="620.0" text="Добро пожаловать в систему отчётности ХАИ" textFill="#ebe9e9">
             <font>
                 <Font name="Bauhaus 93" size="28.0" />
             </font>
         </Label>
-      <AnchorPane layoutY="70.0" prefHeight="538.0" prefWidth="765.0" style="-fx-background-color: #fff;">
+      <AnchorPane layoutX="-1.0" layoutY="71.0" prefHeight="538.0" prefWidth="852.0" style="-fx-background-color: #fff;">
          <children>
             <Button fx:id="goOtchetButton" layoutX="13.0" layoutY="497.0" mnemonicParsing="false" text="Сформировать отчёт" />
             <TextField fx:id="facultetNumber" layoutX="14.0" layoutY="14.0" promptText="Номер факультета" />
-            <TextField fx:id="groupNumber" layoutX="14.0" layoutY="49.0" promptText="номер кафедры" />
-            <Button fx:id="showAllReports" layoutX="14.0" layoutY="86.0" mnemonicParsing="false" text="Показать все отчёты" />
+            <TextField fx:id="groupNumber" layoutX="175.0" layoutY="14.0" promptText="номер кафедры" />
+            <Button fx:id="showAllReports" layoutX="110.0" layoutY="49.0" mnemonicParsing="false" text="Показать все отчёты" />
             <Button fx:id="importInExcelButton" layoutX="567.0" layoutY="497.0" mnemonicParsing="false" text="Импортировать отчёт в Excel" />
-            <ScrollBar fx:id="scrollBaR" layoutX="144.0" layoutY="132.0" orientation="VERTICAL" prefHeight="322.0" prefWidth="23.0" />
+            <ScrollBar fx:id="scrollBaR" layoutX="368.0" layoutY="466.0" orientation="VERTICAL" prefHeight="62.0" prefWidth="50.0" />
+            <TableView fx:id="tableViewReportsTable2" layoutX="14.0" layoutY="81.0" prefHeight="380.0" prefWidth="309.0">
+              <columns>
+                <TableColumn fx:id="DepartmentNameInTable" prefWidth="75.0" text="Кафедра" />
+                <TableColumn fx:id="ProjectNameInTable" prefWidth="233.0" text="Название отчета" />
+              </columns>
+            </TableView>
+            <TableView fx:id="tableViewReportsTable" layoutX="336.0" layoutY="27.0" prefHeight="423.0" prefWidth="570.0">
+               <columns>
+                  <TableColumn fx:id="numberColumnInTable" prefWidth="42.0" text="№" />
+                  <TableColumn fx:id="NameColumnEventInTable" prefWidth="154.0" text="Найменування заходiв" />
+                  <TableColumn fx:id="dataColumnInTable" prefWidth="77.0" text="Срок " />
+                  <TableColumn fx:id="rateColumnInTable" prefWidth="73.0" text="Вiдмiтка" />
+                  <TableColumn fx:id="authorColumnInTable" prefWidth="221.0" text="Виконавцi " />
+                  <TableColumn fx:id="NameColumnEventInTable1" prefWidth="154.0" text="Найменування заходiв" />
+               </columns>
+            </TableView>
          </children>
       </AnchorPane>
-      <TableView fx:id="tableViewReportsTable" layoutX="175.0" layoutY="120.0" prefHeight="423.0" prefWidth="570.0">
-         <columns>
-            <TableColumn fx:id="numberColumnInTable" prefWidth="42.0" text="№" />
-            <TableColumn fx:id="NameColumnEventInTable" prefWidth="154.0" text="Найменування заходiв" />
-            <TableColumn fx:id="dataColumnInTable" text="Срок " />
-            <TableColumn fx:id="rateColumnInTable" prefWidth="70.0" text="Вiдмiтка" />
-            <TableColumn fx:id="authorColumnInTable" prefWidth="221.0" text="Виконавцi " />
-         </columns>
-      </TableView>
     </children>
 </AnchorPane>

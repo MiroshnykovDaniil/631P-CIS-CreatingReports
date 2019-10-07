@@ -9,6 +9,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import db.entity.Report;
+import db.entity.Reports;
 import db.entity.Teacher;
 import db.entity.User;
 
@@ -34,12 +36,16 @@ public class DBManager {
 	private static final String SQL_DELETE_USER="DELETE FROM `user` WHERE name=?";
 	
 	private static final String SQL_GET_ALL_TEACHERS="SELECT * FROM `teacher` WHERE 1";
-	
+
+	private static final  String SQL_GET_REPORTS_BY_DEPARTMENT = "SELECT * from reports inner JOIN department on department_id = department.id where department.name = ?";
+	private static final  String SQL_GET_REPORTS = "SELECT * from reports";
+	private static final  String SQL_GET_REPORT = "SELECT * from report where report_id = ?";
+
 	//===============================
 
 	private DBManager() {
 		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
+			Class.forName("com.mysql.jdbc.Driver");
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -266,14 +272,80 @@ public class DBManager {
 		}		
 		return list;
 	}
-	
-	/**
-	 * Extracts data from result set and fills teacher entity by it.
-	 * 
-	 * @param rs - ResultSet of query
-	 * @return teacher entity
-	 * @throws SQLException
-	 */
+
+	public List<Reports> getReportsByDepartment(int department){
+		List<Reports> reports = new ArrayList<>();
+		Connection con = null;
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		try {
+			con = getConnection();
+			st = con.prepareStatement(SQL_GET_REPORTS_BY_DEPARTMENT);
+			st.setInt(1,department);
+			rs = st.executeQuery();
+			while (rs.next()) {
+				reports.add(getReports(rs));
+			}
+			con.commit();
+		} catch (SQLException e) {
+			rollback(con);
+		} finally {
+			close(con, st, rs);
+		}
+		return reports;
+	}
+
+	public List<Reports> getAllReports() {
+		List<Reports> reports = new ArrayList<>();
+		Connection con = null;
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		try {
+			con = getConnection();
+			st = con.prepareStatement(SQL_GET_REPORTS);
+			rs = st.executeQuery();
+			while (rs.next()) {
+				reports.add(getReports(rs));
+			}
+			con.commit();
+		} catch (SQLException e) {
+			rollback(con);
+		} finally {
+			close(con, st, rs);
+		}
+		return reports;
+	}
+
+	public List<Report> getReportById(int id){
+		//SQL_GET_REPORT
+		List<Report> report = new ArrayList<>();
+		Connection con = null;
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		try {
+			con = getConnection();
+			st = con.prepareStatement(SQL_GET_REPORT);
+			st.setInt(1,id);
+			rs = st.executeQuery();
+			while (rs.next()) {
+				report.add(getReport(rs));
+			}
+			con.commit();
+		} catch (SQLException e) {
+			rollback(con);
+		} finally {
+			close(con, st, rs);
+		}
+		return report;
+	}
+
+		/**
+         * Extracts data from result set and fills teacher entity by it.
+         *
+         * @param rs - ResultSet of query
+         * @return teacher entity
+         * @throws SQLException
+         */
 	private Teacher getTeacher(ResultSet rs) throws SQLException {
 		Teacher ins = new Teacher();
 		ins.setId(rs.getLong(Fields.ID));
@@ -281,5 +353,26 @@ public class DBManager {
 		ins.setDepartment_id(rs.getLong(Fields.DEPARTMENT_ID));
 		ins.setPosition_id(rs.getLong(Fields.POSITION_ID));
 		return ins;
+	}
+
+	private Reports getReports(ResultSet rs) throws  SQLException{
+		Reports reports = new Reports();
+		reports.setId(rs.getLong(Fields.ID));
+		reports.setName(rs.getString(Fields.NAME));
+		reports.setDepartment_id(rs.getLong(Fields.DEPARTMENT_ID));
+		reports.setDate(rs.getDate(Fields.DATE));
+		return reports;
+	}
+
+	private Report getReport(ResultSet rs) throws  SQLException{
+		Report report = new Report();
+		report.setId(rs.getLong(Fields.ID));
+		report.setStatus(rs.getString(Fields.STATUS));
+		report.setDate(rs.getDate(Fields.DATE));
+		report.setReport_id(rs.getLong(Fields.REPORT_ID));
+		report.setActivity_id(rs.getLong(Fields.ACTIVITY_ID));
+		report.setUser_id(rs.getLong(Fields.USER_ID));
+
+		return report;
 	}
 }
