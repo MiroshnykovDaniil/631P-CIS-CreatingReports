@@ -54,10 +54,11 @@ public class Controller {
 
 		});
 	}
-
+	public static long userId;
 	private void signIn(String login, String password) {
 		User user = DBManager.getInstance().findUserByLogin(login);
 		if (user != null && user.getPassword().equals(password)) {
+		    userId = user.getId();
 			if (user.getAuthority_id() == 0) {
 				openNewScene("/sample/view/admin.fxml");
 			} else {
@@ -72,7 +73,7 @@ public class Controller {
 // метод позволяющий открывать нам любое fxml окно исходя из какого-то действия.
 // Достаточно прописать в теле вызова метода расположение файла пример - openNewScene("/sample/view/app.fxml");
 	public void openNewScene(String window) {
-		loginSingUpButton.getScene().getWidth();
+		//loginSingUpButton.getScene().getWidth();
 		FXMLLoader loader = new FXMLLoader();
 		loader.setLocation(getClass().getResource(window));
 		try {

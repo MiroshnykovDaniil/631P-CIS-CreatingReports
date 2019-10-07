@@ -18,7 +18,7 @@ import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseButton;
 
-public class HomeController {
+public class HomeController extends Controller{
 
     @FXML
     private ResourceBundle resources;
@@ -134,6 +134,11 @@ public class HomeController {
                         }
                     });
         ProjectNameInTable.setCellValueFactory(new PropertyValueFactory<>("name"));
+
+        goOtchetButton.setOnAction(event -> {
+            openNewScene("/sample/view/createReport.fxml");
+
+        });
     }
 
     private boolean isNullOrEmpty(String str) {
