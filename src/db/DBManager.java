@@ -9,6 +9,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import db.entity.Activity;
+import db.entity.Department;
 import db.entity.Report;
 import db.entity.Reports;
 import db.entity.Teacher;
@@ -25,7 +27,7 @@ public class DBManager {
 	private static DBManager instance;
 	private String url = "jdbc:mysql://localhost/cis";
 	private String login = "root";
-	private String pass = "";
+	private String pass = "_d_B_p_";
 	
 	// ======== QUERIES ==============
 	
@@ -40,6 +42,10 @@ public class DBManager {
 	private static final  String SQL_GET_REPORTS_BY_DEPARTMENT = "SELECT * from reports inner JOIN department on department_id = department.id where department.name = ?";
 	private static final  String SQL_GET_REPORTS = "SELECT * from reports";
 	private static final  String SQL_GET_REPORT = "SELECT * from report where report_id = ?";
+	
+    private static final String SQL_GET_ACTIVITY = "SELECT * FROM activity WHERE id = ?";
+    
+    private static final String SQL_GET_DEPARTMENT = "SELECT * FROM department WHERE id = ?";
 
 	//===============================
 
@@ -338,6 +344,50 @@ public class DBManager {
 		}
 		return report;
 	}
+	
+	public Activity getActivityById(long id) {
+        Activity activity = null;
+        Connection con = null;
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        try {
+            con = getConnection();
+            st = con.prepareStatement(SQL_GET_ACTIVITY);
+            st.setLong(1, id);
+            rs = st.executeQuery();
+            if (rs.next()) {
+                activity = getActivity(rs);
+            }
+            con.commit();
+        } catch (SQLException e) {
+            rollback(con);
+        } finally {
+            close(con, st, rs);
+        }
+        return activity;
+    }
+	
+	public Department getDepartmentById(long id) {
+	    Department department = null;
+        Connection con = null;
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        try {
+            con = getConnection();
+            st = con.prepareStatement(SQL_GET_DEPARTMENT);
+            st.setLong(1, id);
+            rs = st.executeQuery();
+            if (rs.next()) {
+                department = getDepartment(rs);
+            }
+            con.commit();
+        } catch (SQLException e) {
+            rollback(con);
+        } finally {
+            close(con, st, rs);
+        }
+        return department;
+    }
 
 		/**
          * Extracts data from result set and fills teacher entity by it.
@@ -375,4 +425,18 @@ public class DBManager {
 
 		return report;
 	}
+    
+    private Activity getActivity(ResultSet rs) throws SQLException {
+        Activity ins = new Activity();
+        ins.setId(rs.getLong(Fields.ID));
+        ins.setName(rs.getString(Fields.NAME));
+        return ins;
+    }
+    
+    private Department getDepartment(ResultSet rs) throws SQLException {
+        Department ins = new Department();
+        ins.setId(rs.getLong(Fields.ID));
+        ins.setName(rs.getString(Fields.NAME));
+        return ins;
+    }
 }
