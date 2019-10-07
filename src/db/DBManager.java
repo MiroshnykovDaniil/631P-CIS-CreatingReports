@@ -21,25 +21,25 @@ import db.entity.User;
 public class DBManager {
 
 	private static DBManager instance;
-	private String url = "jdbc:mysql://localhost/cis";
-	private String login = "root";
-	private String pass = "";
+	private String url = "jdbc:postgresql://localhost:5432/postgres";
+	private String login = "postgres";
+	private String pass = "admin";
 	
 	// ======== QUERIES ==============
 	
 	//USER
-	private static final String SQL_FIND_USER_BY_LOGIN = "SELECT * FROM user WHERE name=?";
-	private static final String SQL_INSERT_USER="INSERT INTO `user`(`name`, `email`, `password`, `authority_id`) VALUES (?,?,?,?)";
-	private static final String SQL_UPDATE_USER="UPDATE `user` SET `name`=?,`email`=?,`password`=?,`authority_id`=? WHERE id=?";
-	private static final String SQL_DELETE_USER="DELETE FROM `user` WHERE name=?";
+	private static final String SQL_FIND_USER_BY_LOGIN = "SELECT * FROM users WHERE name=?";
+	private static final String SQL_INSERT_USER="INSERT INTO users(name, email, password, authority_id) VALUES (?,?,?,?)";
+	private static final String SQL_UPDATE_USER="UPDATE users SET name=?,email=?,password=?,authority_id=? WHERE id=?";
+	private static final String SQL_DELETE_USER="DELETE FROM users WHERE name=?";
 	
-	private static final String SQL_GET_ALL_TEACHERS="SELECT * FROM `teacher` WHERE 1";
+	private static final String SQL_GET_ALL_TEACHERS="SELECT * FROM teacher WHERE 1";
 	
 	//===============================
 
 	private DBManager() {
 		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
+			Class.forName("org.postgresql.Driver");
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
