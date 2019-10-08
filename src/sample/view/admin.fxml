@@ -54,7 +54,19 @@
                   </Tab>
                   <Tab text="Заходи">
                     <content>
-                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                           <children>
+                              <TableView fx:id="tableActivity" layoutX="71.0" layoutY="23.0" prefHeight="427.0" prefWidth="234.0">
+                                <columns>
+                                  <TableColumn fx:id="activityColumn" prefWidth="233.0" text="C1" />
+                                </columns>
+                              </TableView>
+                              <Button fx:id="buttonActivityDel" layoutX="489.0" layoutY="28.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="177.0" text="Удалить" />
+                              <Button fx:id="buttonActivityChange" layoutX="374.0" layoutY="236.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="149.0" text="Изменить" />
+                              <Button fx:id="buttonActivityCreate" layoutX="639.0" layoutY="236.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="166.0" text="Добавить" />
+                              <TextField fx:id="textActivity" layoutX="374.0" layoutY="201.0" prefHeight="25.0" prefWidth="437.0" />
+                           </children>
+                        </AnchorPane>
                     </content>
                   </Tab>
                   <Tab text="Пользователи">

@@ -40,7 +40,11 @@ public class DBManager {
 	private static final  String SQL_GET_REPORT = "SELECT * from report where report_id = ?";
 	
     private static final String SQL_GET_ACTIVITY = "SELECT * FROM activity WHERE id = ?";
-    
+    private static final String SQL_GET_ACTIVITYS = "SELECT * FROM activity";
+    private static final String SQL_UPDATE_ACTIVITY = "UPDATE activity SET `name` = ? where `id` = ?";
+    private static final String SQL_INSERT_ACTIVITY ="INSERT INTO activity (`name`) VALUES (?)";
+    private static final String SQL_DELETE_ACTIVITY ="DELETE FROM activity where `id` = ?";
+
     private static final String SQL_GET_DEPARTMENT_BY_ID = "SELECT * FROM department WHERE id = ?";
 	private static final String SQL_GET_DEPARTMENT_BY_NAME = "SELECT * FROM department WHERE name = ?";
 	private static final String SQL_GET_DEPARTMENT ="SELECT * FROM department";
@@ -319,6 +323,23 @@ public class DBManager {
 		}
 		return true;
 	}
+
+    public boolean insertActivity(String activity){
+        Connection con = null;
+        PreparedStatement st = null;
+        try {
+            con = getConnection();
+            st = con.prepareStatement(SQL_INSERT_ACTIVITY);
+            st.setString(1, activity);
+            st.executeUpdate();
+            con.commit();
+        } catch (SQLException e) {
+            rollback(con);
+        } finally {
+            close(con, st);
+        }
+        return true;
+    }
 	
 	/**
 	 * Updates `user` table row in DB.
@@ -404,6 +425,23 @@ public class DBManager {
 		return true;
 	}
 
+    public boolean updateActivity(String newName, Activity activity){
+        Connection con = null;
+        PreparedStatement st = null;
+        try {
+            con = getConnection();
+            st = con.prepareStatement(SQL_UPDATE_ACTIVITY);
+            st.setString(1, newName);
+            st.setLong(2, activity.getId());
+            st.executeUpdate();
+            con.commit();
+        } catch (SQLException e) {
+            rollback(con);
+        } finally {
+            close(con, st);
+        }
+        return true;
+    }
 
 
 	/**
@@ -479,6 +517,23 @@ public class DBManager {
 		}
 		return true;
 	}
+
+    public boolean deleteActivity(Activity activity){
+        Connection con = null;
+        PreparedStatement st = null;
+        try {
+            con = getConnection();
+            st = con.prepareStatement(SQL_DELETE_ACTIVITY);
+            st.setLong(1, activity.getId());
+            st.executeUpdate();
+            con.commit();
+        } catch (SQLException e) {
+            rollback(con);
+        } finally {
+            close(con, st);
+        }
+        return true;
+    }
 
 	/**
 	 * Extracts data from result set and fills user entity by it.
@@ -699,6 +754,26 @@ public class DBManager {
 		return position;
 	}
 
+    public List<Activity> getActivity() {
+        List<Activity> activity = new ArrayList<>();
+        Connection con = null;
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        try {
+            con = getConnection();
+            st = con.prepareStatement(SQL_GET_ACTIVITYS);
+            rs = st.executeQuery();
+            while (rs.next()) {
+                activity.add(getActivity(rs));
+            }
+            con.commit();
+        } catch (SQLException e) {
+            rollback(con);
+        } finally {
+            close(con, st, rs);
+        }
+        return activity;
+    }
 		/**
          * Extracts data from result set and fills teacher entity by it.
          *

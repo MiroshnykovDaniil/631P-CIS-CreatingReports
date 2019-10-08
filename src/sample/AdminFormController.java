@@ -115,10 +115,31 @@ public class AdminFormController {
     @FXML
     private TextField textPos;
 
+
+    @FXML
+    private TableView<Activity> tableActivity;
+
+    @FXML
+    private TableColumn<Activity, String> activityColumn;
+
+    @FXML
+    private Button buttonActivityDel;
+
+    @FXML
+    private Button buttonActivityChange;
+
+    @FXML
+    private Button buttonActivityCreate;
+
+    @FXML
+    private TextField textActivity;
+
+
     @FXML
     void initialize() {
         showAllDep();
         showAllPos();
+        showAllActivity();
         showAllReports.setOnAction(event -> {
             if (isNullOrEmpty(groupNumber.getText())) {
                 findAllReports();
@@ -155,7 +176,23 @@ public class AdminFormController {
             showAllPos();
         });
 
+        buttonActivityCreate.setOnAction(event -> {
+            if(textActivity.getText()!="")
+                addActivity();
+            showAllActivity();
+        });
+        buttonActivityChange.setOnAction(event -> {
+            if(textPos.getText()!="")
+                updateActivity();
+            showAllActivity();
+        });
+        buttonActivityDel.setOnAction(event -> {
+            deleteActivity();
+            showAllActivity();
+        });
+
         depColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+        activityColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         numberColumnInTable.setCellValueFactory(new PropertyValueFactory<>("id"));
 
         DepartmentNameInTable.setCellValueFactory(new PropertyValueFactory<>("name"));
@@ -301,5 +338,26 @@ public class AdminFormController {
         DBManager manager = DBManager.getInstance();
         if (tablePos.getSelectionModel().getSelectedItem() != null)
             manager.deletePosition(tablePos.getSelectionModel().getSelectedItem());
+    }
+
+    private void showAllActivity(){
+        DBManager manager = DBManager.getInstance();
+        ObservableList<Activity> activities = FXCollections
+                .observableArrayList(manager.getActivity());
+        tableActivity.setItems(activities);
+    }
+    private void addActivity(){
+        DBManager manager = DBManager.getInstance();
+        manager.insertActivity(textActivity.getText());
+    }
+    private void updateActivity(){
+        DBManager manager = DBManager.getInstance();
+        if (tableActivity.getSelectionModel().getSelectedItem() != null)
+            manager.updateActivity(textActivity.getText(),tableActivity.getSelectionModel().getSelectedItem());
+    }
+    private void deleteActivity(){
+        DBManager manager = DBManager.getInstance();
+        if (tableActivity.getSelectionModel().getSelectedItem() != null)
+            manager.deleteActivity(tableActivity.getSelectionModel().getSelectedItem());
     }
 }
