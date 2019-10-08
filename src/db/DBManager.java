@@ -44,7 +44,7 @@ public class DBManager {
 	private static final  String SQL_GET_REPORT = "SELECT * from report where report_id = ?";
 	
     private static final String SQL_GET_ACTIVITY = "SELECT * FROM activity WHERE id = ?";
-    private static final String SQL_GET_ACTIVITYS = "SELECT * FROM activity";
+    private static final String SQL_GET_ACTIVITIES = "SELECT * FROM activity";
     private static final String SQL_UPDATE_ACTIVITY = "UPDATE activity SET `name` = ? where `id` = ?";
     private static final String SQL_INSERT_ACTIVITY ="INSERT INTO activity (`name`) VALUES (?)";
     private static final String SQL_DELETE_ACTIVITY ="DELETE FROM activity where `id` = ?";
@@ -821,7 +821,7 @@ public class DBManager {
         ResultSet rs = null;
         try {
             con = getConnection();
-            st = con.prepareStatement(SQL_GET_ACTIVITYS);
+            st = con.prepareStatement(SQL_GET_ACTIVITIES);
             rs = st.executeQuery();
             while (rs.next()) {
                 activity.add(getActivity(rs));
