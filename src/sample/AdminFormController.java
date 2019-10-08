@@ -5,9 +5,7 @@ import java.util.Date;
 import java.util.ResourceBundle;
 
 import db.DBManager;
-import db.entity.Report;
-import db.entity.Reports;
-import db.entity.Teacher;
+import db.entity.*;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -81,9 +79,46 @@ public class AdminFormController {
     @FXML
     private TableColumn<Reports, String> ProjectNameInTable;
 
+    @FXML
+    private TableView<Department> tableDepartment;
+
+    @FXML
+    private TableColumn<Department, String> depColumn;
+
+    @FXML
+    private Button buttonChangeDep;
+
+    @FXML
+    private Button buttonDeleteDep;
+
+    @FXML
+    private Button buttonAddDep;
+
+    @FXML
+    private TextField textDep;
+
+    @FXML
+    private TableView<Position> tablePos;
+
+    @FXML
+    private TableColumn<Position, String> posColumn;
+
+    @FXML
+    private Button buttonPosDel;
+
+    @FXML
+    private Button buttonPosChange;
+
+    @FXML
+    private Button buttonPosAdd;
+
+    @FXML
+    private TextField textPos;
 
     @FXML
     void initialize() {
+        showAllDep();
+        showAllPos();
         showAllReports.setOnAction(event -> {
             if (isNullOrEmpty(groupNumber.getText())) {
                 findAllReports();
@@ -91,8 +126,39 @@ public class AdminFormController {
                 findReportsByDep();
             }
         });
+        buttonDeleteDep.setOnAction(event -> {
+            deleteDep();
+            showAllDep();
+        });
+        buttonChangeDep.setOnAction(event -> {
+            if (textDep.getText() != "")
+                updateDep();
+            showAllDep();
+        });
+        buttonAddDep.setOnAction(event -> {
+            if (textDep.getText() != "")
+                addDep();
+            showAllDep();
+        });
+        buttonPosAdd.setOnAction(event -> {
+            if(textPos.getText()!="")
+                addPos();
+            showAllPos();
+        });
+        buttonPosChange.setOnAction(event -> {
+            if(textPos.getText()!="")
+                updatePos();
+            showAllPos();
+        });
+        buttonPosDel.setOnAction(event -> {
+            deletePos();
+            showAllPos();
+        });
 
+        depColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         numberColumnInTable.setCellValueFactory(new PropertyValueFactory<>("id"));
+
+        DepartmentNameInTable.setCellValueFactory(new PropertyValueFactory<>("name"));
 
         DepartmentNameInTable.setCellValueFactory(
                 new PropertyValueFactory<Reports, String>("department_id") {
@@ -107,6 +173,8 @@ public class AdminFormController {
                         return newValue;
                     }
                 });
+        posColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+
         ProjectNameInTable.setCellValueFactory(new PropertyValueFactory<>("name"));
 
         tableViewReportsTable2.setRowFactory(tv -> {
@@ -120,6 +188,8 @@ public class AdminFormController {
             });
             return row;
         });
+
+
 
         NameColumnEventInTable
                 .setCellValueFactory(new PropertyValueFactory<Report, String>("activity_id") {
@@ -150,6 +220,15 @@ public class AdminFormController {
                         return new ReadOnlyObjectWrapper<String>("");
                     }
                 });
+
+        deleteButton.setOnAction(event ->{
+            DBManager manager = DBManager.getInstance();
+            System.out.println(tableViewReportsTable2.getSelectionModel().getSelectedItem());
+            if (tableViewReportsTable2.getSelectionModel().getSelectedItem() != null)
+                manager.deleteReports(tableViewReportsTable2.getSelectionModel().getSelectedItem());
+            showAllReports.fire();
+            System.out.println("deleted");
+        });
     }
 
 
@@ -179,5 +258,48 @@ public class AdminFormController {
         ObservableList<Report> report = FXCollections
                 .observableArrayList(manager.getReportById(id));
         tableViewReportsTable.setItems(report);
+    }
+
+    private void showAllDep(){
+        DBManager manager = DBManager.getInstance();
+        ObservableList<Department> departments = FXCollections
+                .observableArrayList(manager.getDepartment());
+        tableDepartment.setItems(departments);
+    }
+
+    private void deleteDep(){
+        DBManager manager = DBManager.getInstance();
+        if (tableDepartment.getSelectionModel().getSelectedItem() != null)
+            manager.deleteDepartment(tableDepartment.getSelectionModel().getSelectedItem());
+    }
+    private void updateDep(){
+        DBManager manager = DBManager.getInstance();
+        if (tableDepartment.getSelectionModel().getSelectedItem() != null)
+            manager.updateDepartment(textDep.getText(),tableDepartment.getSelectionModel().getSelectedItem());
+    }
+    private void addDep(){
+        DBManager manager = DBManager.getInstance();
+        manager.insertDepartment(textDep.getText());
+    }
+
+    private void showAllPos(){
+        DBManager manager = DBManager.getInstance();
+        ObservableList<Position> positions = FXCollections
+                .observableArrayList(manager.getPosition());
+        tablePos.setItems(positions);
+    }
+    private void addPos(){
+        DBManager manager = DBManager.getInstance();
+        manager.insertPosition(textPos.getText());
+    }
+    private void updatePos(){
+        DBManager manager = DBManager.getInstance();
+        if (tablePos.getSelectionModel().getSelectedItem() != null)
+            manager.updatePosition(textPos.getText(),tablePos.getSelectionModel().getSelectedItem());
+    }
+    private void deletePos(){
+        DBManager manager = DBManager.getInstance();
+        if (tablePos.getSelectionModel().getSelectedItem() != null)
+            manager.deletePosition(tablePos.getSelectionModel().getSelectedItem());
     }
 }
