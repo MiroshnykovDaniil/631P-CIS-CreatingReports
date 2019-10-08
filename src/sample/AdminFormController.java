@@ -134,12 +134,39 @@ public class AdminFormController {
     @FXML
     private TextField textActivity;
 
+    @FXML
+    private TableView<Teacher> tableTeacher;
+
+    @FXML
+    private TableColumn<Teacher, String> teacherNameColumn;
+
+    @FXML
+    private TableColumn<Teacher, String> teacherDepColumn;
+
+    @FXML
+    private TableColumn<Teacher, String> TeacherPosColumn;
+
+    @FXML
+    private Button buttonDeleteTeacher;
+
+    @FXML
+    private TextField textTeacherName;
+
+    @FXML
+    private TextField textTeacherDep;
+
+    @FXML
+    private TextField textTeacherPos;
+
+    @FXML
+    private Button buttonUpdateTeacher;
 
     @FXML
     void initialize() {
         showAllDep();
         showAllPos();
         showAllActivity();
+        showAllTeacher();
         showAllReports.setOnAction(event -> {
             if (isNullOrEmpty(groupNumber.getText())) {
                 findAllReports();
@@ -243,6 +270,39 @@ public class AdminFormController {
                 });
         dataColumnInTable.setCellValueFactory(new PropertyValueFactory<>("date"));
         rateColumnInTable.setCellValueFactory(new PropertyValueFactory<>("status"));
+        teacherNameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+
+        teacherDepColumn
+                .setCellValueFactory(new PropertyValueFactory<Teacher, String>("department_id") {
+                    @Override
+                    public ObservableValue<String> call(
+                            TableColumn.CellDataFeatures<Teacher, String> param) {
+                        Object value = super.call(param).getValue();
+                        for (Department department : DBManager.getInstance().getDepartment()) {
+                            if (department.getId() == (Long) value) {
+                                return new ReadOnlyObjectWrapper<String>(department.getName());
+                            }
+                        }
+                        return new ReadOnlyObjectWrapper<String>("");
+                    }
+                });
+        TeacherPosColumn
+                .setCellValueFactory(new PropertyValueFactory<Teacher, String>("position_id") {
+                    @Override
+                    public ObservableValue<String> call(
+                            TableColumn.CellDataFeatures<Teacher, String> param) {
+                        Object value = super.call(param).getValue();
+                        for (Position position : DBManager.getInstance().getPosition()) {
+                            if (position.getId() == (Long) value) {
+                                return new ReadOnlyObjectWrapper<String>(position.getName());
+                            }
+                        }
+                        return new ReadOnlyObjectWrapper<String>("");
+                    }
+                });
+
+
+
         authorColumnInTable
                 .setCellValueFactory(new PropertyValueFactory<Report, String>("user_id") {
                     @Override
@@ -359,5 +419,38 @@ public class AdminFormController {
         DBManager manager = DBManager.getInstance();
         if (tableActivity.getSelectionModel().getSelectedItem() != null)
             manager.deleteActivity(tableActivity.getSelectionModel().getSelectedItem());
+    }
+
+
+    private void showAllTeacher(){
+        DBManager manager = DBManager.getInstance();
+        ObservableList<Teacher> teachers = FXCollections
+                .observableArrayList(manager.getAllTeachers());
+        tableTeacher.setItems(teachers);
+    }
+    // todo Сделать чтобы можно было выбирать все нужные id из списков где в виде name'ов
+    private void addTeacher(){
+        DBManager manager = DBManager.getInstance();
+        Teacher teacher = new Teacher();
+        teacher.setName(textTeacherName.getText());
+        teacher.setDepartment_id(Integer.parseInt(textTeacherDep.getText()));
+        teacher.setPosition_id(Integer.parseInt(textTeacherPos.getText()));
+        manager.insertTeacher(teacher);
+    }
+    private void updateTeacher(){
+        DBManager manager = DBManager.getInstance();
+        if (tableTeacher.getSelectionModel().getSelectedItem() != null){
+            Teacher teacher = tableTeacher.getSelectionModel().getSelectedItem();
+            if(textTeacherName.getText() != "") teacher.setName(textTeacherName.getText());
+            if(textTeacherDep.getText() != "") teacher.setDepartment_id(Long.parseLong(textTeacherDep.getText()));
+            if(textTeacherPos.getText() != "") teacher.setPosition_id(Long.parseLong(textTeacherPos.getText()));
+
+            manager.updateTeacher(teacher);
+        }
+    }
+    private void deleteTeacher(){
+        DBManager manager = DBManager.getInstance();
+        if (tableTeacher.getSelectionModel().getSelectedItem() != null)
+            manager.deleteTeacher(tableTeacher.getSelectionModel().getSelectedItem());
     }
 }

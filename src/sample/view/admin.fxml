@@ -53,9 +53,9 @@
                            <children>
                               <TableView fx:id="tableTeacher" layoutX="8.0" layoutY="30.0" prefHeight="456.0" prefWidth="497.0">
                                 <columns>
-                                  <TableColumn fx:id="teacherNameColumn" prefWidth="207.0" text="C1" />
-                                  <TableColumn fx:id="teacherDepColumn" prefWidth="56.0" text="C2" />
-                                    <TableColumn fx:id="TeacherPosColumn" prefWidth="233.0" text="Column X" />
+                                  <TableColumn fx:id="teacherNameColumn" prefWidth="207.0" text="ФИО" />
+                                  <TableColumn fx:id="teacherDepColumn" prefWidth="56.0" text="Кафедра" />
+                                    <TableColumn fx:id="TeacherPosColumn" prefWidth="233.0" text="Должность" />
                                 </columns>
                               </TableView>
                               <Button fx:id="buttonDeleteTeacher" layoutX="528.0" layoutY="30.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="202.0" text="Удалить" />
