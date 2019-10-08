@@ -37,6 +37,7 @@ public class Controller {
 	@FXML
 	private Button loginSingUpButton;
 
+
 	@FXML
 	void initialize() {
 		authSigInButton.setOnAction(event -> {

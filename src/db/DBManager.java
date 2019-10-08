@@ -9,12 +9,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import db.entity.Activity;
-import db.entity.Department;
-import db.entity.Report;
-import db.entity.Reports;
-import db.entity.Teacher;
-import db.entity.User;
+import db.entity.*;
 
 /**
  * Provides methods for work with DataBase.
@@ -38,6 +33,11 @@ public class DBManager {
 	private static final String SQL_DELETE_USER="DELETE FROM `user` WHERE name=?";
 	
 	private static final String SQL_GET_ALL_TEACHERS="SELECT * FROM `teacher` WHERE 1";
+	private static final String SQL_GET_TEACHER = "SELECT * FROM teacher WHERE id = ?";
+	private static final String SQL_UPDATE_TEACHER = "UPDATE teacher SET `name` = ?, `department_id`=?, `position_id` = ? where `id` = ?";
+	private static final String SQL_INSERT_TEACHER ="INSERT INTO teacher (`name`, `department_id`, `position_id`) VALUES (?,?,?)";
+	private static final String SQL_DELETE_TEACHER ="DELETE FROM teacher where `id` = ?";
+
 
 	private static final  String SQL_GET_REPORTS_BY_DEPARTMENT = "SELECT * from reports inner JOIN department on department_id = department.id where department.name = ?";
 	private static final  String SQL_GET_REPORTS = "SELECT * from reports";
@@ -45,10 +45,20 @@ public class DBManager {
 	
     private static final String SQL_GET_ACTIVITY = "SELECT * FROM activity WHERE id = ?";
     private static final String SQL_GET_ALL_ACTIVITIES = "SELECT * FROM activity";
+    private static final String SQL_UPDATE_ACTIVITY = "UPDATE activity SET `name` = ? where `id` = ?";
+    private static final String SQL_INSERT_ACTIVITY ="INSERT INTO activity (`name`) VALUES (?)";
+    private static final String SQL_DELETE_ACTIVITY ="DELETE FROM activity where `id` = ?";
+
+
     
     private static final String SQL_GET_DEPARTMENT = "SELECT * FROM department WHERE id = ?";
     private static final String SQL_GET_ALL_DEPARTMENTS = "SELECT * FROM department";
 	private static final String SQL_GET_DEPARTMENT_BY_NAME = "SELECT * FROM department WHERE name = ?";
+	private static final String SQL_GET_DEPARTMENTS ="SELECT * FROM department";
+	private static final String SQL_DELETE_DEPARTMENT ="DELETE FROM department where `id` = ?";
+	private static final String SQL_UPDATE_DEPARTMENT ="UPDATE department SET `name` = ? where `id` = ?";
+	private static final String SQL_INSERT_DEPARTMENT ="INSERT INTO department (`name`) VALUES (?)";
+
 
 	private static final String SQL_GET_REPORT_BY_ID = "SELECT * FROM reports WHERE id=?";
 	private static final String SQL_INSERT_REPORTS = "INSERT INTO `reports` (`user_id`, `date`, `name`, `department_id`) VALUES (?,?,?,?)";
@@ -58,6 +68,14 @@ public class DBManager {
 	private static final String SQL_INSERT_REPORT = "INSERT INTO `report` (`report_id`, `user_id`, `activity_id`, `date`, `status`) VALUES(?,?,?,?,?)";
 	private static final String SQL_UPDATE_REPORT = "UPDATE `report` SET `report_id`=?, `user_id`=?, `activity_id`=?, `date`=?, `status`=? WHERE id=?";
 	private static final String SQL_DELETE_REPORT = "DELETE FROM `report` WHERE id=?";
+
+	private static final String SQL_DELETE_REPORTS = "DELETE FROM reports where `id` = ?";
+
+	private static final String SQL_GET_POSITION = "SELECT * FROM position";
+	private static final String SQL_UPDATE_POSITION = "UPDATE position SET `name` = ? where `id` = ?";
+	private static final String SQL_INSERT_POSITION ="INSERT INTO position (`name`) VALUES (?)";
+	private static final String SQL_DELETE_POSITION ="DELETE FROM position where `id` = ?";
+	private static final String SQL_GET_POSITION_BY_ID ="SELECT * FROM position WHERE id = ?";
 
 	//===============================
 
@@ -214,6 +232,28 @@ public class DBManager {
 		return reports != null ? reports.getId() : -1;
 	}
 
+	public Position getPositionById(long id) {
+		Position position = null;
+		Connection con = null;
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		try {
+			con = getConnection();
+			st = con.prepareStatement(SQL_GET_POSITION_BY_ID);
+			st.setLong(1, id);
+			rs = st.executeQuery();
+			if (rs.next()) {
+				position = getPosition(rs);
+			}
+			con.commit();
+		} catch (SQLException e) {
+			rollback(con);
+		} finally {
+			close(con, st, rs);
+		}
+		return position;
+	}
+
 
 	/**
 	 * Inserts new row into `user` table in DB.
@@ -251,6 +291,76 @@ public class DBManager {
 			st.setDate(2, reports.getDate());
 			st.setLong(4, reports.getDepartment_id());
 			st.setString(3, reports.getName());
+			st.executeUpdate();
+			con.commit();
+		} catch (SQLException e) {
+			rollback(con);
+		} finally {
+			close(con, st);
+		}
+		return true;
+	}
+
+	public boolean insertDepartment(String department){
+		Connection con = null;
+		PreparedStatement st = null;
+		try {
+			con = getConnection();
+			st = con.prepareStatement(SQL_INSERT_DEPARTMENT);
+			st.setString(1, department);
+			st.executeUpdate();
+			con.commit();
+		} catch (SQLException e) {
+			rollback(con);
+		} finally {
+			close(con, st);
+		}
+		return true;
+	}
+
+	public boolean insertPosition(String position){
+		Connection con = null;
+		PreparedStatement st = null;
+		try {
+			con = getConnection();
+			st = con.prepareStatement(SQL_INSERT_POSITION);
+			st.setString(1, position);
+			st.executeUpdate();
+			con.commit();
+		} catch (SQLException e) {
+			rollback(con);
+		} finally {
+			close(con, st);
+		}
+		return true;
+	}
+
+    public boolean insertActivity(String activity){
+        Connection con = null;
+        PreparedStatement st = null;
+        try {
+            con = getConnection();
+            st = con.prepareStatement(SQL_INSERT_ACTIVITY);
+            st.setString(1, activity);
+            st.executeUpdate();
+            con.commit();
+        } catch (SQLException e) {
+            rollback(con);
+        } finally {
+            close(con, st);
+        }
+        return true;
+    }
+
+	public boolean insertTeacher(Teacher teacher){
+		Connection con = null;
+		PreparedStatement st = null;
+		try {
+			con = getConnection();
+			st = con.prepareStatement(SQL_INSERT_TEACHER);
+			st.setString(1, teacher.getName());
+			st.setLong(2, teacher.getDepartment_id());
+			st.setLong(3, teacher.getPosition_id());
 			st.executeUpdate();
 			con.commit();
 		} catch (SQLException e) {
@@ -369,6 +479,80 @@ public class DBManager {
 		return true;
 	}
 
+	public boolean updateDepartment(String newName,Department department){
+		Connection con = null;
+		PreparedStatement st = null;
+		try {
+			con = getConnection();
+			st = con.prepareStatement(SQL_UPDATE_DEPARTMENT);
+			st.setString(1, newName);
+			st.setLong(2, department.getId());
+			st.executeUpdate();
+			con.commit();
+		} catch (SQLException e) {
+			rollback(con);
+		} finally {
+			close(con, st);
+		}
+		return true;
+	}
+
+	public boolean updatePosition(String newName, Position position){
+		Connection con = null;
+		PreparedStatement st = null;
+		try {
+			con = getConnection();
+			st = con.prepareStatement(SQL_UPDATE_POSITION);
+			st.setString(1, newName);
+			st.setLong(2, position.getId());
+			st.executeUpdate();
+			con.commit();
+		} catch (SQLException e) {
+			rollback(con);
+		} finally {
+			close(con, st);
+		}
+		return true;
+	}
+
+    public boolean updateActivity(String newName, Activity activity){
+        Connection con = null;
+        PreparedStatement st = null;
+        try {
+            con = getConnection();
+            st = con.prepareStatement(SQL_UPDATE_ACTIVITY);
+            st.setString(1, newName);
+            st.setLong(2, activity.getId());
+            st.executeUpdate();
+            con.commit();
+        } catch (SQLException e) {
+            rollback(con);
+        } finally {
+            close(con, st);
+        }
+        return true;
+    }
+
+	public boolean updateTeacher(Teacher teacher){
+		Connection con = null;
+		PreparedStatement st = null;
+		try {
+			con = getConnection();
+			st = con.prepareStatement(SQL_UPDATE_TEACHER);
+			st.setString(1, teacher.getName());
+			st.setLong(2, teacher.getDepartment_id());
+			st.setLong(3, teacher.getPosition_id());
+			st.setLong(2, teacher.getId());
+			st.executeUpdate();
+			con.commit();
+		} catch (SQLException e) {
+			rollback(con);
+		} finally {
+			close(con, st);
+		}
+		return true;
+	}
+
 
 	/**
 	 * Deletes `user` table row in DB.
@@ -392,7 +576,92 @@ public class DBManager {
 		}
 		return true;
 	}
-	
+
+	public boolean deleteReports(Reports reports){
+        Connection con = null;
+        PreparedStatement st = null;
+        try {
+            con = getConnection();
+            st = con.prepareStatement(SQL_DELETE_REPORTS);
+            st.setLong(1, reports.getId());
+            st.executeUpdate();
+            con.commit();
+        } catch (SQLException e) {
+            rollback(con);
+        } finally {
+            close(con, st);
+        }
+        return true;
+    }
+
+	public boolean deleteDepartment(Department department){
+		Connection con = null;
+		PreparedStatement st = null;
+		try {
+			con = getConnection();
+			st = con.prepareStatement(SQL_DELETE_DEPARTMENT);
+			st.setLong(1, department.getId());
+			st.executeUpdate();
+			con.commit();
+		} catch (SQLException e) {
+			rollback(con);
+		} finally {
+			close(con, st);
+		}
+		return true;
+	}
+
+	public boolean deletePosition(Position position){
+		Connection con = null;
+		PreparedStatement st = null;
+		try {
+			con = getConnection();
+			st = con.prepareStatement(SQL_DELETE_POSITION);
+			st.setLong(1, position.getId());
+			st.executeUpdate();
+			con.commit();
+		} catch (SQLException e) {
+			rollback(con);
+		} finally {
+			close(con, st);
+		}
+		return true;
+	}
+
+    public boolean deleteActivity(Activity activity){
+        Connection con = null;
+        PreparedStatement st = null;
+        try {
+            con = getConnection();
+            st = con.prepareStatement(SQL_DELETE_ACTIVITY);
+            st.setLong(1, activity.getId());
+            st.executeUpdate();
+            con.commit();
+        } catch (SQLException e) {
+            rollback(con);
+        } finally {
+            close(con, st);
+        }
+        return true;
+    }
+
+	public boolean deleteTeacher(Teacher teacher){
+		Connection con = null;
+		PreparedStatement st = null;
+		try {
+			con = getConnection();
+		st = con.prepareStatement(SQL_DELETE_TEACHER);
+			st.setLong(1, teacher.getId());
+			st.executeUpdate();
+			con.commit();
+		} catch (SQLException e) {
+			rollback(con);
+		} finally {
+			close(con, st);
+		}
+		return true;
+	}
+
 	/**
 	 * Extracts data from result set and fills user entity by it.
 	 * 
@@ -612,6 +881,68 @@ public class DBManager {
 		return department;
 	}
 
+	public List<Department> getDepartment() {
+		List<Department> department = new ArrayList<>();
+		Connection con = null;
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		try {
+			con = getConnection();
+			st = con.prepareStatement(SQL_GET_DEPARTMENTS);
+			rs = st.executeQuery();
+			while (rs.next()) {
+				department.add(getDepartment(rs));
+			}
+			con.commit();
+		} catch (SQLException e) {
+			rollback(con);
+		} finally {
+			close(con, st, rs);
+		}
+		return department;
+	}
+
+	public List<Position> getPosition() {
+		List<Position> position = new ArrayList<>();
+		Connection con = null;
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		try {
+			con = getConnection();
+			st = con.prepareStatement(SQL_GET_POSITION);
+			rs = st.executeQuery();
+			while (rs.next()) {
+				position.add(getPosition(rs));
+			}
+			con.commit();
+		} catch (SQLException e) {
+			rollback(con);
+		} finally {
+			close(con, st, rs);
+		}
+		return position;
+	}
+
+    public List<Activity> getActivity() {
+        List<Activity> activity = new ArrayList<>();
+        Connection con = null;
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        try {
+            con = getConnection();
+            st = con.prepareStatement(SQL_GET_ALL_ACTIVITIES);
+            rs = st.executeQuery();
+            while (rs.next()) {
+                activity.add(getActivity(rs));
+            }
+            con.commit();
+        } catch (SQLException e) {
+            rollback(con);
+        } finally {
+            close(con, st, rs);
+        }
+        return activity;
+    }
 		/**
          * Extracts data from result set and fills teacher entity by it.
          *
@@ -662,4 +993,11 @@ public class DBManager {
         ins.setName(rs.getString(Fields.NAME));
         return ins;
     }
+
+	private Position getPosition(ResultSet rs) throws SQLException {
+		Position ins = new Position();
+		ins.setId(rs.getLong(Fields.ID));
+		ins.setName(rs.getString(Fields.NAME));
+		return ins;
+	}
 }
