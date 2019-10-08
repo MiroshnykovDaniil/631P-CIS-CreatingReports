@@ -32,7 +32,7 @@ public class Teacher extends Entity{
 	}
 	@Override
 	public String toString() {
-		return "Teacher [position_id=" + position_id + ", department_id=" + department_id + ", name=" + name + "]";
+		return getName();
 	}
 	
 

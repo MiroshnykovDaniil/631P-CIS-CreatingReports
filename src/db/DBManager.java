@@ -49,7 +49,10 @@ public class DBManager {
     private static final String SQL_INSERT_ACTIVITY ="INSERT INTO activity (`name`) VALUES (?)";
     private static final String SQL_DELETE_ACTIVITY ="DELETE FROM activity where `id` = ?";
 
+
+    
     private static final String SQL_GET_DEPARTMENT = "SELECT * FROM department WHERE id = ?";
+    private static final String SQL_GET_ALL_DEPARTMENTS = "SELECT * FROM department";
 	private static final String SQL_GET_DEPARTMENT_BY_NAME = "SELECT * FROM department WHERE name = ?";
 	private static final String SQL_GET_DEPARTMENTS ="SELECT * FROM department";
 	private static final String SQL_DELETE_DEPARTMENT ="DELETE FROM department where `id` = ?";
@@ -61,6 +64,10 @@ public class DBManager {
 	private static final String SQL_INSERT_REPORTS = "INSERT INTO `reports` (`user_id`, `date`, `name`, `department_id`) VALUES (?,?,?,?)";
 	private static final String SQL_UPDATE_REPORTS = "UPDATE `reports` SET `user_id`=?, `date`=?, `name`=?, `department_id` = ? WHERE id = ?";
 	private static final String SQL_GET_REPORT_ID = "SELECT * FROM reports WHERE `name` = ?";
+	
+	private static final String SQL_INSERT_REPORT = "INSERT INTO `report` (`report_id`, `user_id`, `activity_id`, `date`, `status`) VALUES(?,?,?,?,?)";
+	private static final String SQL_UPDATE_REPORT = "UPDATE `report` SET `report_id`=?, `user_id`=?, `activity_id`=?, `date`=?, `status`=? WHERE id=?";
+	private static final String SQL_DELETE_REPORT = "DELETE FROM `report` WHERE id=?";
 
 	private static final String SQL_DELETE_REPORTS = "DELETE FROM reports where `id` = ?";
 
@@ -222,7 +229,7 @@ public class DBManager {
 		} finally {
 			close(con, st, rs);
 		}
-		return reports.getId();
+		return reports != null ? reports.getId() : -1;
 	}
 
 	public Position getPositionById(long id) {
@@ -363,6 +370,66 @@ public class DBManager {
 		}
 		return true;
 	}
+	
+	public boolean insertReport(Report report) {
+	    Connection con = null;
+        PreparedStatement st = null;
+        try {
+            con = getConnection();
+            st = con.prepareStatement(SQL_INSERT_REPORT);
+            st.setLong(1, report.getReport_id());
+            st.setLong(2, report.getUser_id());
+            st.setLong(3, report.getActivity_id());
+            st.setDate(4, report.getDate());
+            st.setString(5, report.getStatus());
+            st.executeUpdate();
+            con.commit();
+        } catch (SQLException e) {
+            rollback(con);
+        } finally {
+            close(con, st);
+        }
+        return true;
+	}
+	
+	public boolean updateReport(Report report) {
+        Connection con = null;
+        PreparedStatement st = null;
+        try {
+            con = getConnection();
+            st = con.prepareStatement(SQL_UPDATE_REPORT);
+            st.setLong(1, report.getReport_id());
+            st.setLong(2, report.getUser_id());
+            st.setLong(3, report.getActivity_id());
+            st.setDate(4, report.getDate());
+            st.setString(5, report.getStatus());
+            st.setLong(6, report.getId());
+            st.executeUpdate();
+            con.commit();
+        } catch (SQLException e) {
+            rollback(con);
+        } finally {
+            close(con, st);
+        }
+        return true;
+    }
+	
+	public boolean deleteReport(Report report) {
+        Connection con = null;
+        PreparedStatement st = null;
+        try {
+            con = getConnection();
+            st = con.prepareStatement(SQL_DELETE_REPORT);
+            st.setLong(1, report.getId());
+            st.executeUpdate();
+            con.commit();
+        } catch (SQLException e) {
+            rollback(con);
+        } finally {
+            close(con, st);
+        }
+        return true;
+    }
 	
 	/**
 	 * Updates `user` table row in DB.
@@ -682,6 +749,48 @@ public class DBManager {
 		}
 		return reports;
 	}
+	
+	public List<Department> getAllDepartments() {
+	    List<Department> departments = new ArrayList<>();
+        Connection con = null;
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        try {
+            con = getConnection();
+            st = con.prepareStatement(SQL_GET_ALL_DEPARTMENTS);
+            rs = st.executeQuery();
+            while (rs.next()) {
+                departments.add(getDepartment(rs));
+            }
+            con.commit();
+        } catch (SQLException e) {
+            rollback(con);
+        } finally {
+            close(con, st, rs);
+        }
+        return departments;
+	}
+	
+	public List<Activity> getAllActivities() {
+        List<Activity> activities = new ArrayList<>();
+        Connection con = null;
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        try {
+            con = getConnection();
+            st = con.prepareStatement(SQL_GET_ALL_ACTIVITIES);
+            rs = st.executeQuery();
+            while (rs.next()) {
+                activities.add(getActivity(rs));
+            }
+            con.commit();
+        } catch (SQLException e) {
+            rollback(con);
+        } finally {
+            close(con, st, rs);
+        }
+        return activities;
+    }
 
 	public List<Report> getReportById(int id){
 		//SQL_GET_REPORT
