@@ -20,7 +20,7 @@ public class Activity extends Entity{
 
 	@Override
 	public String toString() {
-		return "Activity [name=" + name + "]";
+		return getName();
 	}
 	
 }

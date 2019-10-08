@@ -20,7 +20,7 @@ public class Department extends Entity{
 
 	@Override
 	public String toString() {
-		return "Department [name=" + name + "]";
+		return getName();
 	}
 	
 }
