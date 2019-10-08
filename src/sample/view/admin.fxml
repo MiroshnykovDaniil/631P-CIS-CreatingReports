@@ -49,7 +49,23 @@
                 </Tab>
                   <Tab text="Преподаватели">
                     <content>
-                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                           <children>
+                              <TableView fx:id="tableTeacher" layoutX="8.0" layoutY="30.0" prefHeight="456.0" prefWidth="497.0">
+                                <columns>
+                                  <TableColumn fx:id="teacherNameColumn" prefWidth="207.0" text="C1" />
+                                  <TableColumn fx:id="teacherDepColumn" prefWidth="56.0" text="C2" />
+                                    <TableColumn fx:id="TeacherPosColumn" prefWidth="233.0" text="Column X" />
+                                </columns>
+                              </TableView>
+                              <Button fx:id="buttonDeleteTeacher" layoutX="528.0" layoutY="30.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="202.0" text="Удалить" />
+                              <TextField fx:id="textTeacherName" layoutX="528.0" layoutY="106.0" prefHeight="25.0" prefWidth="339.0" promptText="ФИО" />
+                              <TextField fx:id="textTeacherDep" layoutX="528.0" layoutY="144.0" prefHeight="25.0" prefWidth="340.0" promptText="Кафедра" />
+                              <TextField fx:id="textTeacherPos" layoutX="528.0" layoutY="182.0" prefHeight="25.0" prefWidth="342.0" promptText="Должность" />
+                              <Button fx:id="buttonUpdateTeacher" layoutX="528.0" layoutY="235.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="115.0" text="Изменить" />
+                              <Button fx:id="buttonCreateTeacher" layoutX="761.0" layoutY="235.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="106.0" text="Добавить" />
+                           </children>
+                        </AnchorPane>
                     </content>
                   </Tab>
                   <Tab text="Заходи">

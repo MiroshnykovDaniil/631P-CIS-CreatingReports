@@ -34,6 +34,11 @@ public class DBManager {
 	private static final String SQL_DELETE_USER="DELETE FROM `user` WHERE name=?";
 	
 	private static final String SQL_GET_ALL_TEACHERS="SELECT * FROM `teacher` WHERE 1";
+	private static final String SQL_GET_TEACHER = "SELECT * FROM teacher WHERE id = ?";
+	private static final String SQL_UPDATE_TEACHER = "UPDATE teacher SET `name` = ?, `department_id`=?, `position_id` = ? where `id` = ?";
+	private static final String SQL_INSERT_TEACHER ="INSERT INTO teacher (`name`, `department_id`, `position_id`) VALUES (?,?,?)";
+	private static final String SQL_DELETE_TEACHER ="DELETE FROM teacher where `id` = ?";
+
 
 	private static final  String SQL_GET_REPORTS_BY_DEPARTMENT = "SELECT * from reports inner JOIN department on department_id = department.id where department.name = ?";
 	private static final  String SQL_GET_REPORTS = "SELECT * from reports";
@@ -340,6 +345,25 @@ public class DBManager {
         }
         return true;
     }
+
+	public boolean insertTeacher(Teacher teacher){
+		Connection con = null;
+		PreparedStatement st = null;
+		try {
+			con = getConnection();
+			st = con.prepareStatement(SQL_INSERT_TEACHER);
+			st.setString(1, teacher.getName());
+			st.setLong(2, teacher.getDepartment_id());
+			st.setLong(3, teacher.getPosition_id());
+			st.executeUpdate();
+			con.commit();
+		} catch (SQLException e) {
+			rollback(con);
+		} finally {
+			close(con, st);
+		}
+		return true;
+	}
 	
 	/**
 	 * Updates `user` table row in DB.
@@ -443,6 +467,26 @@ public class DBManager {
         return true;
     }
 
+	public boolean updateTeacher(Teacher teacher){
+		Connection con = null;
+		PreparedStatement st = null;
+		try {
+			con = getConnection();
+			st = con.prepareStatement(SQL_UPDATE_TEACHER);
+			st.setString(1, teacher.getName());
+			st.setLong(2, teacher.getDepartment_id());
+			st.setLong(3, teacher.getPosition_id());
+			st.setLong(2, teacher.getId());
+			st.executeUpdate();
+			con.commit();
+		} catch (SQLException e) {
+			rollback(con);
+		} finally {
+			close(con, st);
+		}
+		return true;
+	}
+
 
 	/**
 	 * Deletes `user` table row in DB.
@@ -534,6 +578,23 @@ public class DBManager {
         }
         return true;
     }
+
+	public boolean deleteTeacher(Teacher teacher){
+		Connection con = null;
+		PreparedStatement st = null;
+		try {
+			con = getConnection();
+		st = con.prepareStatement(SQL_DELETE_TEACHER);
+			st.setLong(1, teacher.getId());
+			st.executeUpdate();
+			con.commit();
+		} catch (SQLException e) {
+			rollback(con);
+		} finally {
+			close(con, st);
+		}
+		return true;
+	}
 
 	/**
 	 * Extracts data from result set and fills user entity by it.
