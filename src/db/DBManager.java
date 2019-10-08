@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import db.entity.*;
-import javafx.geometry.Pos;
 
 /**
  * Provides methods for work with DataBase.
@@ -50,9 +49,9 @@ public class DBManager {
     private static final String SQL_INSERT_ACTIVITY ="INSERT INTO activity (`name`) VALUES (?)";
     private static final String SQL_DELETE_ACTIVITY ="DELETE FROM activity where `id` = ?";
 
-    private static final String SQL_GET_DEPARTMENT_BY_ID = "SELECT * FROM department WHERE id = ?";
+    private static final String SQL_GET_DEPARTMENT = "SELECT * FROM department WHERE id = ?";
 	private static final String SQL_GET_DEPARTMENT_BY_NAME = "SELECT * FROM department WHERE name = ?";
-	private static final String SQL_GET_DEPARTMENT ="SELECT * FROM department";
+	private static final String SQL_GET_DEPARTMENTS ="SELECT * FROM department";
 	private static final String SQL_DELETE_DEPARTMENT ="DELETE FROM department where `id` = ?";
 	private static final String SQL_UPDATE_DEPARTMENT ="UPDATE department SET `name` = ? where `id` = ?";
 	private static final String SQL_INSERT_DEPARTMENT ="INSERT INTO department (`name`) VALUES (?)";
@@ -736,7 +735,7 @@ public class DBManager {
 		ResultSet rs = null;
 		try {
 			con = getConnection();
-			st = con.prepareStatement(SQL_GET_DEPARTMENT_BY_ID);
+			st = con.prepareStatement(SQL_GET_DEPARTMENT);
 			st.setLong(1, id);
 			rs = st.executeQuery();
 			if (rs.next()) {
@@ -780,7 +779,7 @@ public class DBManager {
 		ResultSet rs = null;
 		try {
 			con = getConnection();
-			st = con.prepareStatement(SQL_GET_DEPARTMENT);
+			st = con.prepareStatement(SQL_GET_DEPARTMENTS);
 			rs = st.executeQuery();
 			while (rs.next()) {
 				department.add(getDepartment(rs));
