@@ -6,6 +6,7 @@ import java.util.ResourceBundle;
 
 import db.DBManager;
 import db.entity.User;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;

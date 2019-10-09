@@ -15,7 +15,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseButton;
 
-import static com.mysql.jdbc.StringUtils.isNullOrEmpty;
+//import static com.mysql.jdbc.StringUtils.isNullOrEmpty;
 
 public class AdminFormController {
 
@@ -162,6 +162,9 @@ public class AdminFormController {
     private Button buttonUpdateTeacher;
 
     @FXML
+    private Button buttonCreateTeacher;
+
+    @FXML
     void initialize() {
         showAllDep();
         showAllPos();
@@ -189,12 +192,12 @@ public class AdminFormController {
             showAllDep();
         });
         buttonPosAdd.setOnAction(event -> {
-            if(textPos.getText()!="")
+            if (textPos.getText() != "")
                 addPos();
             showAllPos();
         });
         buttonPosChange.setOnAction(event -> {
-            if(textPos.getText()!="")
+            if (textPos.getText() != "")
                 updatePos();
             showAllPos();
         });
@@ -204,12 +207,12 @@ public class AdminFormController {
         });
 
         buttonActivityCreate.setOnAction(event -> {
-            if(textActivity.getText()!="")
+            if (textActivity.getText() != "")
                 addActivity();
             showAllActivity();
         });
         buttonActivityChange.setOnAction(event -> {
-            if(textPos.getText()!="")
+            if (textPos.getText() != "")
                 updateActivity();
             showAllActivity();
         });
@@ -221,6 +224,20 @@ public class AdminFormController {
             exportToExcel();
         });
 
+        buttonCreateTeacher.setOnAction(event -> {
+            addTeacher();
+            showAllTeacher();
+        });
+
+        buttonDeleteTeacher.setOnAction(event -> {
+            deleteTeacher();
+            showAllTeacher();
+        });
+
+        buttonUpdateTeacher.setOnAction(event -> {
+            updateTeacher();
+            showAllTeacher();
+        });
 
         depColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         activityColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
@@ -256,7 +273,6 @@ public class AdminFormController {
             });
             return row;
         });
-
 
 
         NameColumnEventInTable
@@ -306,7 +322,6 @@ public class AdminFormController {
                 });
 
 
-
         authorColumnInTable
                 .setCellValueFactory(new PropertyValueFactory<Report, String>("user_id") {
                     @Override
@@ -322,7 +337,7 @@ public class AdminFormController {
                     }
                 });
 
-        deleteButton.setOnAction(event ->{
+        deleteButton.setOnAction(event -> {
             DBManager manager = DBManager.getInstance();
             System.out.println(tableViewReportsTable2.getSelectionModel().getSelectedItem());
             if (tableViewReportsTable2.getSelectionModel().getSelectedItem() != null)
@@ -361,79 +376,88 @@ public class AdminFormController {
         tableViewReportsTable.setItems(report);
     }
 
-    private void showAllDep(){
+    private void showAllDep() {
         DBManager manager = DBManager.getInstance();
         ObservableList<Department> departments = FXCollections
                 .observableArrayList(manager.getDepartment());
         tableDepartment.setItems(departments);
     }
 
-    private void deleteDep(){
+    private void deleteDep() {
         DBManager manager = DBManager.getInstance();
         if (tableDepartment.getSelectionModel().getSelectedItem() != null)
             manager.deleteDepartment(tableDepartment.getSelectionModel().getSelectedItem());
     }
-    private void updateDep(){
+
+    private void updateDep() {
         DBManager manager = DBManager.getInstance();
         if (tableDepartment.getSelectionModel().getSelectedItem() != null)
-            manager.updateDepartment(textDep.getText(),tableDepartment.getSelectionModel().getSelectedItem());
+            manager.updateDepartment(textDep.getText(), tableDepartment.getSelectionModel().getSelectedItem());
     }
-    private void addDep(){
+
+    private void addDep() {
         DBManager manager = DBManager.getInstance();
         manager.insertDepartment(textDep.getText());
     }
 
-    private void showAllPos(){
+    private void showAllPos() {
         DBManager manager = DBManager.getInstance();
         ObservableList<Position> positions = FXCollections
                 .observableArrayList(manager.getPosition());
         tablePos.setItems(positions);
     }
-    private void addPos(){
+
+    private void addPos() {
         DBManager manager = DBManager.getInstance();
         manager.insertPosition(textPos.getText());
     }
-    private void updatePos(){
+
+    private void updatePos() {
         DBManager manager = DBManager.getInstance();
         if (tablePos.getSelectionModel().getSelectedItem() != null)
-            manager.updatePosition(textPos.getText(),tablePos.getSelectionModel().getSelectedItem());
+            manager.updatePosition(textPos.getText(), tablePos.getSelectionModel().getSelectedItem());
     }
-    private void deletePos(){
+
+    private void deletePos() {
         DBManager manager = DBManager.getInstance();
         if (tablePos.getSelectionModel().getSelectedItem() != null)
             manager.deletePosition(tablePos.getSelectionModel().getSelectedItem());
     }
 
-    private void showAllActivity(){
+    private void showAllActivity() {
         DBManager manager = DBManager.getInstance();
         ObservableList<Activity> activities = FXCollections
                 .observableArrayList(manager.getActivity());
         tableActivity.setItems(activities);
     }
-    private void addActivity(){
+
+    private void addActivity() {
         DBManager manager = DBManager.getInstance();
         manager.insertActivity(textActivity.getText());
     }
-    private void updateActivity(){
+
+    private void updateActivity() {
         DBManager manager = DBManager.getInstance();
         if (tableActivity.getSelectionModel().getSelectedItem() != null)
-            manager.updateActivity(textActivity.getText(),tableActivity.getSelectionModel().getSelectedItem());
+            manager.updateActivity(textActivity.getText(), tableActivity.getSelectionModel().getSelectedItem());
     }
-    private void deleteActivity(){
+
+    private void deleteActivity() {
         DBManager manager = DBManager.getInstance();
         if (tableActivity.getSelectionModel().getSelectedItem() != null)
             manager.deleteActivity(tableActivity.getSelectionModel().getSelectedItem());
     }
 
 
-    private void showAllTeacher(){
+    private void showAllTeacher() {
         DBManager manager = DBManager.getInstance();
         ObservableList<Teacher> teachers = FXCollections
                 .observableArrayList(manager.getAllTeachers());
         tableTeacher.setItems(teachers);
     }
+
     // todo Сделать чтобы можно было выбирать все нужные id из списков где в виде name'ов
-    private void addTeacher(){
+    private void addTeacher() {
         DBManager manager = DBManager.getInstance();
         Teacher teacher = new Teacher();
         teacher.setName(textTeacherName.getText());
@@ -441,22 +465,25 @@ public class AdminFormController {
         teacher.setPosition_id(Integer.parseInt(textTeacherPos.getText()));
         manager.insertTeacher(teacher);
     }
-    private void updateTeacher(){
+
+    private void updateTeacher() {
         DBManager manager = DBManager.getInstance();
-        if (tableTeacher.getSelectionModel().getSelectedItem() != null){
+        if (tableTeacher.getSelectionModel().getSelectedItem() != null) {
             Teacher teacher = tableTeacher.getSelectionModel().getSelectedItem();
-            if(textTeacherName.getText() != "") teacher.setName(textTeacherName.getText());
-            if(textTeacherDep.getText() != "") teacher.setDepartment_id(Long.parseLong(textTeacherDep.getText()));
-            if(textTeacherPos.getText() != "") teacher.setPosition_id(Long.parseLong(textTeacherPos.getText()));
+            if (textTeacherName.getText() != "") teacher.setName(textTeacherName.getText());
+            if (textTeacherDep.getText() != "") teacher.setDepartment_id(Long.parseLong(textTeacherDep.getText()));
+            if (textTeacherPos.getText() != "") teacher.setPosition_id(Long.parseLong(textTeacherPos.getText()));
 
             manager.updateTeacher(teacher);
         }
     }
-    private void deleteTeacher(){
+
+    private void deleteTeacher() {
         DBManager manager = DBManager.getInstance();
         if (tableTeacher.getSelectionModel().getSelectedItem() != null)
             manager.deleteTeacher(tableTeacher.getSelectionModel().getSelectedItem());
     }
+
     private void exportToExcel() {
         DBManager manager = DBManager.getInstance();
         manager.exportToExcel();

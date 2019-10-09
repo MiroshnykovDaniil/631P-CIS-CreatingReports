@@ -576,7 +576,7 @@ public class DBManager {
 			st.setString(1, teacher.getName());
 			st.setLong(2, teacher.getDepartment_id());
 			st.setLong(3, teacher.getPosition_id());
-			st.setLong(2, teacher.getId());
+			st.setLong(4, teacher.getId());
 			st.executeUpdate();
 			con.commit();
 		} catch (SQLException e) {
@@ -1009,7 +1009,6 @@ public class DBManager {
                 Row row = sheet.createRow(index);
                 row.createCell(0).setCellValue(rs.getString("id"));
                 User user=DBManager.getInstance().findUserById(Long.parseLong(rs.getString("user_id")));
-
                 row.createCell(1).setCellValue(user.getName());
                 row.createCell(2).setCellValue(rs.getString("date"));
                 row.createCell(3).setCellValue(rs.getString("name"));
