@@ -70,6 +70,10 @@ public class HomeController extends Controller{
 
     @FXML
     void initialize() {
+        importInExcelButton.setOnAction((event -> {
+            exportToExcel();
+        }));
+
         showAllReports.setOnAction(event -> {
             if (isNullOrEmpty(groupNumber.getText())) {
                 findAllReports();
@@ -169,4 +173,8 @@ public class HomeController extends Controller{
         tableViewReportsTable.setItems(report);
     }
 
+    private void exportToExcel() {
+        DBManager manager = DBManager.getInstance();
+        manager.exportToExcel();
+    }
 }

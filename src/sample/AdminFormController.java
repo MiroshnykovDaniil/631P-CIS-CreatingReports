@@ -15,7 +15,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseButton;
 
-//import static com.mysql.jdbc.StringUtils.isNullOrEmpty;
+//import static com.postgressql.jdbc.StringUtils.isNullOrEmpty;
 
 public class AdminFormController {
 
@@ -174,6 +174,11 @@ public class AdminFormController {
                 findReportsByDep();
             }
         });
+
+        importInExcelButton.setOnAction(event -> {
+            exportToExcel();
+        });
+
         buttonDeleteDep.setOnAction(event -> {
             deleteDep();
             showAllDep();
@@ -348,6 +353,11 @@ public class AdminFormController {
                 .observableArrayList(manager.getAllReports());
         tableViewReportsTable2.setItems(reports);
 
+    }
+
+    private void exportToExcel() {
+        DBManager manager = DBManager.getInstance();
+        manager.exportToExcel();
     }
 
     private void findReport(int id) {
