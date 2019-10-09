@@ -77,6 +77,9 @@ public class HomeController extends Controller{
                 findReportsByDep();
             }
         });
+        importInExcelButton.setOnAction((event -> {
+            exportToExcel();
+        }));
         tableViewReportsTable2.setRowFactory(tv -> {
             TableRow<Reports> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
@@ -167,6 +170,10 @@ public class HomeController extends Controller{
         ObservableList<Report> report = FXCollections
                     .observableArrayList(manager.getReportById(id));
         tableViewReportsTable.setItems(report);
+    }
+    private void exportToExcel() {
+        DBManager manager = DBManager.getInstance();
+        manager.exportToExcel();
     }
 
 }

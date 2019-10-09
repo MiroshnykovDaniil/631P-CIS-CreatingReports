@@ -1,5 +1,6 @@
 package db;
 
+import java.io.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -9,7 +10,14 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import db.entity.*;
+import db.entity.*;import javafx.scene.control.Alert;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 /**
  * Provides methods for work with DataBase.
@@ -19,15 +27,19 @@ import db.entity.*;
  */
 public class DBManager {
 
+    private FileInputStream fis;
 	private static DBManager instance;
 	private String url = "jdbc:mysql://localhost/cis";
 	private String login = "root";
 	private String pass = "";
+    static String xlsUrl = "jdbc:odbc:DRIVER={Microsoft Excel Driver (*.xls)};"
+            + "DBQ=X:/book1.xlsx;ReadOnly=0;";
 	
 	// ======== QUERIES ==============
-	
+
 	//USER
 	private static final String SQL_FIND_USER_BY_LOGIN = "SELECT * FROM user WHERE name=?";
+    private static final String SQL_FIND_USER_BY_ID = "SELECT * FROM user WHERE id=?";
 	private static final String SQL_INSERT_USER="INSERT INTO `user`(`name`, `email`, `password`, `authority_id`) VALUES (?,?,?,?)";
 	private static final String SQL_UPDATE_USER="UPDATE `user` SET `name`=?,`email`=?,`password`=?,`authority_id`=? WHERE id=?";
 	private static final String SQL_DELETE_USER="DELETE FROM `user` WHERE name=?";
@@ -187,6 +199,28 @@ public class DBManager {
 		}
 		return user;
 	}
+
+    public User findUserById(Long id) {
+        User user = null;
+        Connection con = null;
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        try {
+            con = getConnection();
+            st = con.prepareStatement(SQL_FIND_USER_BY_ID);
+            st.setLong(1, id);
+            rs = st.executeQuery();
+            if (rs.next()) {
+                user = getUser(rs);
+            }
+            con.commit();
+        } catch (SQLException e) {
+            rollback(con);
+        } finally {
+            close(con, st, rs);
+        }
+        return user;
+    }
 
 	public Reports findReportById(long id) {
 		Reports reports = null;
@@ -942,6 +976,68 @@ public class DBManager {
             close(con, st, rs);
         }
         return activity;
+    }
+
+    public void exportAllReportsForXsl() {
+        Connection con = null;
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        try {
+            con = getConnection();
+            st = con.prepareStatement(SQL_GET_REPORTS);
+            rs = st.executeQuery();
+
+            Workbook wb = new XSSFWorkbook();
+            // Open the specified sheet
+            Sheet sheet = wb.createSheet("Reports");
+            Row header = sheet.createRow(0);
+            header.createCell(0).setCellValue("ID");
+            header.createCell(1).setCellValue("User_ID");
+            header.createCell(2).setCellValue("Date");
+            header.createCell(3).setCellValue("Name");
+            header.createCell(4).setCellValue("Department_ID");
+
+            sheet.autoSizeColumn(1);
+            sheet.autoSizeColumn(2);
+            sheet.setColumnWidth(2, 100 * 25);
+            sheet.setColumnWidth(3, 250 * 25); //250 - character width
+
+            sheet.setZoom(110); // scale 110%
+
+            int index = 1;
+            while (rs.next()) {
+                Row row = sheet.createRow(index);
+                row.createCell(0).setCellValue(rs.getString("id"));
+                User user=DBManager.getInstance().findUserById(Long.parseLong(rs.getString("user_id")));
+
+                row.createCell(1).setCellValue(user.getName());
+                row.createCell(2).setCellValue(rs.getString("date"));
+                row.createCell(3).setCellValue(rs.getString("name"));
+                Department department = DBManager.getInstance().getDepartmentById(Long.parseLong(rs.getString("department_id")));
+                row.createCell(4).setCellValue(department.getName());
+                index++;
+            }
+            FileOutputStream fileOut = new FileOutputStream("Reports.xlsx");
+            wb.write(fileOut);
+            fileOut.close();
+            wb.close();
+
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Information Dialog");
+            alert.setHeaderText(null);
+            alert.setContentText("Reports Exported to Excel Sheet.");
+            alert.showAndWait();
+        } catch (SQLException | FileNotFoundException e) {
+            rollback(con);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            close(con, st, rs);
+        }
+    }
+
+    public void exportToExcel() {
+        exportAllReportsForXsl();
     }
 		/**
          * Extracts data from result set and fills teacher entity by it.
