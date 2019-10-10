@@ -175,10 +175,6 @@ public class AdminFormController {
             }
         });
 
-        importInExcelButton.setOnAction(event -> {
-            exportToExcel();
-        });
-
         buttonDeleteDep.setOnAction(event -> {
             deleteDep();
             showAllDep();
@@ -467,8 +463,5 @@ public class AdminFormController {
         if (tableTeacher.getSelectionModel().getSelectedItem() != null)
             manager.deleteTeacher(tableTeacher.getSelectionModel().getSelectedItem());
     }
-    private void exportToExcel() {
-        DBManager manager = DBManager.getInstance();
-        manager.exportToExcel();
-    }
+
 }

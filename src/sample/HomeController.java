@@ -179,9 +179,4 @@ public class HomeController extends Controller{
         DBManager manager = DBManager.getInstance();
         manager.exportToExcel();
     }
-
-    private void exportToExcel() {
-        DBManager manager = DBManager.getInstance();
-        manager.exportToExcel();
-    }
 }

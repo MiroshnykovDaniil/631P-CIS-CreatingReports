@@ -1,5 +1,6 @@
 package db;
 
+import java.io.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -10,6 +11,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import db.entity.*;
+import javafx.scene.control.Alert;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 /**
  * Provides methods for work with DataBase.
@@ -19,24 +27,26 @@ import db.entity.*;
  */
 public class DBManager {
 
+	private FileInputStream fis;
 	private static DBManager instance;
-	private String url = "jdbc:mysql://localhost/cis";
-	private String login = "root";
-	private String pass = "";
-	
+	private String url = "jdbc:postgresql://localhost:5432/postgres";
+	private String login = "postgres";
+	private String pass = "admin";
+
 	// ======== QUERIES ==============
 	
 	//USER
-	private static final String SQL_FIND_USER_BY_LOGIN = "SELECT * FROM user WHERE name=?";
-	private static final String SQL_INSERT_USER="INSERT INTO `user`(`name`, `email`, `password`, `authority_id`) VALUES (?,?,?,?)";
-	private static final String SQL_UPDATE_USER="UPDATE `user` SET `name`=?,`email`=?,`password`=?,`authority_id`=? WHERE id=?";
-	private static final String SQL_DELETE_USER="DELETE FROM `user` WHERE name=?";
+	private static final String SQL_FIND_USER_BY_LOGIN = "SELECT * FROM users WHERE name=?";
+	private static final String SQL_FIND_USER_BY_ID = "SELECT * FROM users WHERE id=?";
+	private static final String SQL_INSERT_USER="INSERT INTO users(name, email, password, authority_id) VALUES (?,?,?,?)";
+	private static final String SQL_UPDATE_USER="UPDATE users SET name=?,email=?,password=?,authority_id=? WHERE id=?";
+	private static final String SQL_DELETE_USER="DELETE FROM users WHERE name=?";
 	
-	private static final String SQL_GET_ALL_TEACHERS="SELECT * FROM `teacher` WHERE 1";
+	private static final String SQL_GET_ALL_TEACHERS="SELECT * FROM teacher";
 	private static final String SQL_GET_TEACHER = "SELECT * FROM teacher WHERE id = ?";
-	private static final String SQL_UPDATE_TEACHER = "UPDATE teacher SET `name` = ?, `department_id`=?, `position_id` = ? where `id` = ?";
-	private static final String SQL_INSERT_TEACHER ="INSERT INTO teacher (`name`, `department_id`, `position_id`) VALUES (?,?,?)";
-	private static final String SQL_DELETE_TEACHER ="DELETE FROM teacher where `id` = ?";
+	private static final String SQL_UPDATE_TEACHER = "UPDATE teacher SET name = ?, department_id=?, position_id = ? where id = ?";
+	private static final String SQL_INSERT_TEACHER ="INSERT INTO teacher (name, department_id, position_id) VALUES (?,?,?)";
+	private static final String SQL_DELETE_TEACHER ="DELETE FROM teacher where id = ?";
 
 
 	private static final  String SQL_GET_REPORTS_BY_DEPARTMENT = "SELECT * from reports inner JOIN department on department_id = department.id where department.name = ?";
@@ -45,9 +55,9 @@ public class DBManager {
 	
     private static final String SQL_GET_ACTIVITY = "SELECT * FROM activity WHERE id = ?";
     private static final String SQL_GET_ALL_ACTIVITIES = "SELECT * FROM activity";
-    private static final String SQL_UPDATE_ACTIVITY = "UPDATE activity SET `name` = ? where `id` = ?";
-    private static final String SQL_INSERT_ACTIVITY ="INSERT INTO activity (`name`) VALUES (?)";
-    private static final String SQL_DELETE_ACTIVITY ="DELETE FROM activity where `id` = ?";
+    private static final String SQL_UPDATE_ACTIVITY = "UPDATE activity SET name = ? where id = ?";
+    private static final String SQL_INSERT_ACTIVITY ="INSERT INTO activity (name) VALUES (?)";
+    private static final String SQL_DELETE_ACTIVITY ="DELETE FROM activity where id = ?";
 
 
     
@@ -55,33 +65,32 @@ public class DBManager {
     private static final String SQL_GET_ALL_DEPARTMENTS = "SELECT * FROM department";
 	private static final String SQL_GET_DEPARTMENT_BY_NAME = "SELECT * FROM department WHERE name = ?";
 	private static final String SQL_GET_DEPARTMENTS ="SELECT * FROM department";
-	private static final String SQL_DELETE_DEPARTMENT ="DELETE FROM department where `id` = ?";
-	private static final String SQL_UPDATE_DEPARTMENT ="UPDATE department SET `name` = ? where `id` = ?";
-	private static final String SQL_INSERT_DEPARTMENT ="INSERT INTO department (`name`) VALUES (?)";
-
+	private static final String SQL_DELETE_DEPARTMENT ="DELETE FROM department where id = ?";
+	private static final String SQL_UPDATE_DEPARTMENT ="UPDATE department SET name = ? where id = ?";
+	private static final String SQL_INSERT_DEPARTMENT ="INSERT INTO department (name) VALUES (?)";
 
 	private static final String SQL_GET_REPORT_BY_ID = "SELECT * FROM reports WHERE id=?";
-	private static final String SQL_INSERT_REPORTS = "INSERT INTO `reports` (`user_id`, `date`, `name`, `department_id`) VALUES (?,?,?,?)";
-	private static final String SQL_UPDATE_REPORTS = "UPDATE `reports` SET `user_id`=?, `date`=?, `name`=?, `department_id` = ? WHERE id = ?";
-	private static final String SQL_GET_REPORT_ID = "SELECT * FROM reports WHERE `name` = ?";
+	private static final String SQL_INSERT_REPORTS = "INSERT INTO reports (user_id, date, name, department_id) VALUES (?,?,?,?)";
+	private static final String SQL_UPDATE_REPORTS = "UPDATE reports SET user_id=?, date=?, name=?, department_id = ? WHERE id = ?";
+	private static final String SQL_GET_REPORT_ID = "SELECT * FROM reports WHERE name = ?";
 	
-	private static final String SQL_INSERT_REPORT = "INSERT INTO `report` (`report_id`, `user_id`, `activity_id`, `date`, `status`) VALUES(?,?,?,?,?)";
-	private static final String SQL_UPDATE_REPORT = "UPDATE `report` SET `report_id`=?, `user_id`=?, `activity_id`=?, `date`=?, `status`=? WHERE id=?";
-	private static final String SQL_DELETE_REPORT = "DELETE FROM `report` WHERE id=?";
+	private static final String SQL_INSERT_REPORT = "INSERT INTO report (report_id, user_id, activity_id, date, status) VALUES(?,?,?,?,?)";
+	private static final String SQL_UPDATE_REPORT = "UPDATE report SET report_id=?, user_id=?, activity_id=?, date=?, status=? WHERE id=?";
+	private static final String SQL_DELETE_REPORT = "DELETE FROM report WHERE id=?";
 
-	private static final String SQL_DELETE_REPORTS = "DELETE FROM reports where `id` = ?";
+	private static final String SQL_DELETE_REPORTS = "DELETE FROM reports where id = ?";
 
 	private static final String SQL_GET_POSITION = "SELECT * FROM position";
-	private static final String SQL_UPDATE_POSITION = "UPDATE position SET `name` = ? where `id` = ?";
-	private static final String SQL_INSERT_POSITION ="INSERT INTO position (`name`) VALUES (?)";
-	private static final String SQL_DELETE_POSITION ="DELETE FROM position where `id` = ?";
+	private static final String SQL_UPDATE_POSITION = "UPDATE position SET name = ? where id = ?";
+	private static final String SQL_INSERT_POSITION ="INSERT INTO position (name) VALUES (?)";
+	private static final String SQL_DELETE_POSITION ="DELETE FROM position where id = ?";
 	private static final String SQL_GET_POSITION_BY_ID ="SELECT * FROM position WHERE id = ?";
 
 	//===============================
 
 	private DBManager() {
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
+			Class.forName("org.postgresql.Driver");
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -175,6 +184,28 @@ public class DBManager {
 			con = getConnection();
 			st = con.prepareStatement(SQL_FIND_USER_BY_LOGIN);
 			st.setString(1, login);
+			rs = st.executeQuery();
+			if (rs.next()) {
+				user = getUser(rs);
+			}
+			con.commit();
+		} catch (SQLException e) {
+			rollback(con);
+		} finally {
+			close(con, st, rs);
+		}
+		return user;
+	}
+
+	public User findUserById(Long id) {
+		User user = null;
+		Connection con = null;
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		try {
+			con = getConnection();
+			st = con.prepareStatement(SQL_FIND_USER_BY_ID);
+			st.setLong(1, id);
 			rs = st.executeQuery();
 			if (rs.next()) {
 				user = getUser(rs);
@@ -749,8 +780,89 @@ public class DBManager {
 		}
 		return reports;
 	}
-	
-	public List<Department> getAllDepartments() {
+
+	public void exportAllReportsForXsl() {
+		Connection con = null;
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		try {
+			con = getConnection();
+			st = con.prepareStatement(SQL_GET_REPORTS);
+			rs = st.executeQuery();
+
+			saveToDirectory(rs);
+
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Information Dialog");
+            alert.setHeaderText(null);
+            alert.setContentText("Reports Exported to Excel Sheet.");
+            alert.showAndWait();
+
+		} catch (SQLException | IOException e) {
+			rollback(con);
+		}
+		finally {
+			close(con, st, rs);
+		}
+	}
+
+    private void saveToDirectory(ResultSet rs) throws IOException, SQLException {
+        Stage stage = new Stage();
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Select directory for save");
+        fileChooser.setInitialFileName("report");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("*.xlsx", "*.xlsx"));
+        File file = fileChooser.showSaveDialog(stage);
+
+		if (file != null) {
+			saveTextToFile(file, rs);
+		}
+    }
+
+    private void saveTextToFile(File file, ResultSet rs) throws IOException, SQLException {
+			Workbook wb = new XSSFWorkbook();
+			Sheet sheet = wb.createSheet("Reports");
+
+			Row header = sheet.createRow(0);
+			Row main = sheet.createRow(2);
+
+			header.createCell(0).setCellValue("Основні заходи з виховної роботи кафедри №__ \"Інженерія програмного забезпечення\" за 20__ - 20__ навчальний рік ");
+			main.createCell(0).setCellValue("№");
+			main.createCell(1).setCellValue("Найменування заходів");
+			main.createCell(2).setCellValue("Строк");
+			main.createCell(3).setCellValue("Виконавці");
+			main.createCell(4).setCellValue("Відмітка виконання");
+
+			sheet.setColumnWidth(0, 50 * 25);
+			sheet.setColumnWidth(1, 250 * 25); //250 - character width
+			sheet.setColumnWidth(2, 150 * 25);
+			sheet.setColumnWidth(3, 200 * 25);
+			sheet.setColumnWidth(4, 150 * 25);
+
+			sheet.setZoom(110); // scale 110%
+
+			int index = 3;
+			while (rs.next()) {
+				Row row = sheet.createRow(index);
+				row.createCell(0).setCellValue(rs.getString("id"));
+				row.createCell(1).setCellValue(rs.getString("name"));
+				row.createCell(2).setCellValue(rs.getString("date"));
+				User user=DBManager.getInstance().findUserById(Long.parseLong(rs.getString("id")));
+				if (user != null)
+				row.createCell(3).setCellValue(user.getName());
+				Department department = DBManager.getInstance().getDepartmentById(Long.parseLong(rs.getString("department_id")));
+				row.createCell(4).setCellValue(department.getName());
+				index++;
+			}
+			FileOutputStream fileOut = new FileOutputStream(file);
+			wb.write(fileOut);
+
+			fileOut.close();
+			wb.close();
+	}
+
+
+    public List<Department> getAllDepartments() {
 	    List<Department> departments = new ArrayList<>();
         Connection con = null;
         PreparedStatement st = null;
@@ -943,6 +1055,7 @@ public class DBManager {
         }
         return activity;
     }
+
 		/**
          * Extracts data from result set and fills teacher entity by it.
          *
@@ -999,5 +1112,9 @@ public class DBManager {
 		ins.setId(rs.getLong(Fields.ID));
 		ins.setName(rs.getString(Fields.NAME));
 		return ins;
+	}
+
+	public void exportToExcel() {
+        exportAllReportsForXsl();
 	}
 }
