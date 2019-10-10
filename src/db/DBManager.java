@@ -49,6 +49,7 @@ public class DBManager {
 	private static final String SQL_DELETE_TEACHER ="DELETE FROM teacher where id = ?";
 
 
+    private static final  String SQL_GET_REPORTS_BY_ID = "SELECT * from reports WHERE id = ?";
 	private static final  String SQL_GET_REPORTS_BY_DEPARTMENT = "SELECT * from reports inner JOIN department on department_id = department.id where department.name = ?";
 	private static final  String SQL_GET_REPORTS = "SELECT * from reports";
 	private static final  String SQL_GET_REPORT = "SELECT * from report where report_id = ?";
@@ -781,23 +782,17 @@ public class DBManager {
 		return reports;
 	}
 
-	public void exportAllReportsForXsl() {
+	public void exportAllReportsForXsl(int id) {
 		Connection con = null;
 		PreparedStatement st = null;
 		ResultSet rs = null;
 		try {
 			con = getConnection();
-			st = con.prepareStatement(SQL_GET_REPORTS);
+			st = con.prepareStatement(SQL_GET_REPORT);
+            st.setInt(1,id);
 			rs = st.executeQuery();
 
 			saveToDirectory(rs);
-
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Information Dialog");
-            alert.setHeaderText(null);
-            alert.setContentText("Reports Exported to Excel Sheet.");
-            alert.showAndWait();
-
 		} catch (SQLException | IOException e) {
 			rollback(con);
 		}
@@ -821,12 +816,12 @@ public class DBManager {
 
     private void saveTextToFile(File file, ResultSet rs) throws IOException, SQLException {
 			Workbook wb = new XSSFWorkbook();
-			Sheet sheet = wb.createSheet("Reports");
+			Sheet sheet = wb.createSheet("Лист 1");
+            Reports reports = null;
 
 			Row header = sheet.createRow(0);
 			Row main = sheet.createRow(2);
 
-			header.createCell(0).setCellValue("Основні заходи з виховної роботи кафедри №__ \"Інженерія програмного забезпечення\" за 20__ - 20__ навчальний рік ");
 			main.createCell(0).setCellValue("№");
 			main.createCell(1).setCellValue("Найменування заходів");
 			main.createCell(2).setCellValue("Строк");
@@ -844,21 +839,31 @@ public class DBManager {
 			int index = 3;
 			while (rs.next()) {
 				Row row = sheet.createRow(index);
-				row.createCell(0).setCellValue(rs.getString("id"));
-				row.createCell(1).setCellValue(rs.getString("name"));
+                Report r = getReport(rs);
+                reports = DBManager.getInstance().getReportsById((int) r.getReport_id());
+				Activity a = DBManager.getInstance().getActivityById(r.getActivity_id());
+				User u = DBManager.getInstance().findUserById(r.getUser_id());
+
+				row.createCell(0).setCellValue(r.getId());
+				row.createCell(1).setCellValue(a.getName());
 				row.createCell(2).setCellValue(rs.getString("date"));
-				User user=DBManager.getInstance().findUserById(Long.parseLong(rs.getString("id")));
-				if (user != null)
-				row.createCell(3).setCellValue(user.getName());
-				Department department = DBManager.getInstance().getDepartmentById(Long.parseLong(rs.getString("department_id")));
-				row.createCell(4).setCellValue(department.getName());
+				row.createCell(3).setCellValue(u.getName());
+				row.createCell(4).setCellValue(r.getStatus());
 				index++;
 			}
+            header.createCell(0).setCellValue(reports.getName());
+
 			FileOutputStream fileOut = new FileOutputStream(file);
 			wb.write(fileOut);
 
 			fileOut.close();
 			wb.close();
+
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Information Dialog");
+            alert.setHeaderText(null);
+            alert.setContentText("Reports Exported to Excel Sheet.");
+            alert.showAndWait();
 	}
 
 
@@ -947,6 +952,28 @@ public class DBManager {
             close(con, st, rs);
         }
         return activity;
+    }
+
+    public Reports getReportsById(int id) {
+        Reports reports = null;
+        Connection con = null;
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        try {
+            con = getConnection();
+            st = con.prepareStatement(SQL_GET_REPORTS_BY_ID);
+            st.setLong(1, id);
+            rs = st.executeQuery();
+            if (rs.next()) {
+                reports = getReports(rs);
+            }
+            con.commit();
+        } catch (SQLException e) {
+            rollback(con);
+        } finally {
+            close(con, st, rs);
+        }
+        return reports;
     }
 	
 	public Department getDepartmentById(long id) {
@@ -1114,7 +1141,7 @@ public class DBManager {
 		return ins;
 	}
 
-	public void exportToExcel() {
-        exportAllReportsForXsl();
+	public void exportToExcel(int id) {
+        exportAllReportsForXsl(id);
 	}
 }

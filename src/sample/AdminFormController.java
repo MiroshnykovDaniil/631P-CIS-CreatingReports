@@ -219,7 +219,7 @@ public class AdminFormController {
             showAllActivity();
         });
         importInExcelButton.setOnAction(event -> {
-            exportToExcel();
+            //exportToExcel();
         });
 
 
@@ -257,8 +257,6 @@ public class AdminFormController {
             });
             return row;
         });
-
-
 
         NameColumnEventInTable
                 .setCellValueFactory(new PropertyValueFactory<Report, String>("activity_id") {
@@ -355,10 +353,10 @@ public class AdminFormController {
 
     }
 
-    private void exportToExcel() {
-        DBManager manager = DBManager.getInstance();
-        manager.exportToExcel();
-    }
+   // private void exportToExcel() {
+   //     DBManager manager = DBManager.getInstance();
+   //     manager.exportToExcel(clickedRow.getId());
+   // }
 
     private void findReport(int id) {
         DBManager manager = DBManager.getInstance();
