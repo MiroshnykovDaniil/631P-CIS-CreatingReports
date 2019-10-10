@@ -222,6 +222,10 @@ public class AdminFormController {
             deleteActivity();
             showAllActivity();
         });
+        importInExcelButton.setOnAction(event -> {
+            exportToExcel();
+        });
+
 
         depColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         activityColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
@@ -462,5 +466,9 @@ public class AdminFormController {
         DBManager manager = DBManager.getInstance();
         if (tableTeacher.getSelectionModel().getSelectedItem() != null)
             manager.deleteTeacher(tableTeacher.getSelectionModel().getSelectedItem());
+    }
+    private void exportToExcel() {
+        DBManager manager = DBManager.getInstance();
+        manager.exportToExcel();
     }
 }
