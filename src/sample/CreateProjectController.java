@@ -97,28 +97,28 @@ public class CreateProjectController {
         DBManager db = DBManager.getInstance();
         departmentNameTb.setItems(FXCollections.observableArrayList(db.getAllDepartments()));
         if (departmentNameTb.getItems().size() == 0) {
-            new Alert(AlertType.ERROR, "Нет кафедр в БД").showAndWait();
+            alertError("Немає кафедр у БД!");
         } else {
             departmentNameTb.getSelectionModel().select(0);
         }
 
         activityTb.setItems(FXCollections.observableArrayList(db.getAllActivities()));
         if (activityTb.getItems().size() == 0) {
-            new Alert(AlertType.ERROR, "Нет заходів в БД").showAndWait();
+            alertError("Немає заходів у БД!");
         } else {
             activityTb.getSelectionModel().select(0);
         }
 
         userTb.setItems(FXCollections.observableArrayList(db.getAllTeachers()));
         if (userTb.getItems().size() == 0) {
-            new Alert(AlertType.ERROR, "Нет преподавателей в БД").showAndWait();
+            alertError("Немає викладачів у БД!");
         } else {
             userTb.getSelectionModel().select(0);
         }
 
         saveProject.setOnAction(event -> {
             if (isNullOrEmpty(reportNameTb.getText()))
-                new Alert(AlertType.WARNING, "Введите название отчета!").showAndWait();
+                alertWarning("Введіть назву звіту!");
             else {
                 Reports report = new Reports();
                 DBManager manager = DBManager.getInstance();
@@ -141,7 +141,7 @@ public class CreateProjectController {
                     manager.insertReports(report);
                     id = manager.findReportId(report.getName());
                     if (id == -1) {
-                        new Alert(AlertType.ERROR, "Создание неуспешно").showAndWait();
+                        alertError("Неуспішне створення");
                     } else {
                         findReportsByReportsId(id);
                     }
@@ -151,11 +151,11 @@ public class CreateProjectController {
 
         saverRecord.setOnAction(e -> {
             if (id == -1) {
-                new Alert(AlertType.WARNING, "Создайте запись!").showAndWait();
+                alertWarning("Створіть запис!");
                 return;
             }
             if (isNullOrEmpty(dateTb.getText()) || isNullOrEmpty(statusTb.getText())) {
-                new Alert(AlertType.WARNING, "Заполните все поля!").showAndWait();
+                alertWarning("Заповніть всі поля!");
                 return;
             }
             Report report = new Report();
@@ -167,7 +167,7 @@ public class CreateProjectController {
                 report.setDate(Date.valueOf(dateTb.getText()));
                 DBManager.getInstance().insertReport(report);
             } catch (IllegalArgumentException ex) {
-                new Alert(AlertType.WARNING, "Укажите дату в формате гггг-мм-дд!").showAndWait();
+                alertWarning("Укажіть дату у форматі рррр-мм-дд!");
             }
             findReportsByReportsId(id);
             selectedReportId = -1;
@@ -175,11 +175,11 @@ public class CreateProjectController {
 
         changeRecord.setOnAction(e -> {
             if (id == -1) {
-                new Alert(AlertType.WARNING, "Создайте запись!").showAndWait();
+                alertWarning("Створіть запис!");
                 return;
             }
             if (isNullOrEmpty(dateTb.getText()) || isNullOrEmpty(statusTb.getText())) {
-                new Alert(AlertType.WARNING, "Заполните все поля!").showAndWait();
+                alertWarning("Заповніть всі поля!");
                 return;
             }
             if (selectedReportId != -1) {
@@ -194,17 +194,17 @@ public class CreateProjectController {
                 findReportsByReportsId(id);
                 selectedReportId = -1;
             } else {
-                new Alert(AlertType.WARNING, "Выберете запись двойным кликом!").showAndWait();
+                alertWarning("Оберіть запис подвійним кліком!");
             }
         });
 
         deleteRecord.setOnAction(e -> {
             if (id == -1) {
-                new Alert(AlertType.WARNING, "Создайте запись!").showAndWait();
+                alertWarning("Створіть запис!");
                 return;
             }
             if (isNullOrEmpty(dateTb.getText()) || isNullOrEmpty(statusTb.getText())) {
-                new Alert(AlertType.WARNING, "Заполните все поля!").showAndWait();
+                alertWarning("Заповніть всі поля!");
                 return;
             }
             if (selectedReportId != -1) {
@@ -214,7 +214,7 @@ public class CreateProjectController {
                 findReportsByReportsId(id);
                 selectedReportId = -1;
             } else {
-                new Alert(AlertType.WARNING, "Выберете запись двойным кликом!").showAndWait();
+                alertWarning("Оберіть запис подвійним кліком!");
             }
         });
 
@@ -287,5 +287,21 @@ public class CreateProjectController {
         ObservableList<Report> report = FXCollections
                     .observableArrayList(manager.getReportById((int) id));
         tableViewReportsTable.setItems(report);
+    }
+
+    private void alertWarning(String text) {
+        Alert alert = new Alert(AlertType.WARNING);
+        alert.setTitle("Warning!");
+        alert.setHeaderText(null);
+        alert.setContentText(text);
+        alert.showAndWait();
+    }
+
+    private void alertError(String text) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error!");
+        alert.setHeaderText(null);
+        alert.setContentText(text);
+        alert.showAndWait();
     }
 }

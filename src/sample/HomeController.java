@@ -1,7 +1,9 @@
 package sample;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import db.DBManager;
@@ -68,8 +70,14 @@ public class HomeController extends Controller{
     @FXML
     private TableColumn<Report, String> authorColumnInTable;
 
+    Reports clickedRow;
     @FXML
     void initialize() {
+
+        importInExcelButton.setOnAction((event -> {
+            exportToExcel();
+        }));
+
         showAllReports.setOnAction(event -> {
             if (isNullOrEmpty(groupNumber.getText())) {
                 findAllReports();
@@ -80,12 +88,13 @@ public class HomeController extends Controller{
         importInExcelButton.setOnAction((event -> {
             exportToExcel();
         }));
+
         tableViewReportsTable2.setRowFactory(tv -> {
             TableRow<Reports> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
                 if (!row.isEmpty() && event.getButton() == MouseButton.PRIMARY
                             && event.getClickCount() == 2) {
-                    Reports clickedRow = row.getItem();
+                    clickedRow = row.getItem();
                     findReport((int) clickedRow.getId());
                 }
             });
@@ -171,9 +180,21 @@ public class HomeController extends Controller{
                     .observableArrayList(manager.getReportById(id));
         tableViewReportsTable.setItems(report);
     }
+
     private void exportToExcel() {
-        DBManager manager = DBManager.getInstance();
-        manager.exportToExcel();
+        if (clickedRow == null) {
+            alertError("Оберіть звіт!");
+        } else {
+            DBManager manager = DBManager.getInstance();
+            manager.exportToExcel((int) clickedRow.getId());
+        }
     }
 
+    private void alertError(String text) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error!");
+        alert.setHeaderText(null);
+        alert.setContentText(text);
+        alert.showAndWait();
+    }
 }

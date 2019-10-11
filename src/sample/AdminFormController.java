@@ -15,7 +15,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseButton;
 
-import static com.mysql.jdbc.StringUtils.isNullOrEmpty;
+//import static com.postgressql.jdbc.StringUtils.isNullOrEmpty;
 
 public class AdminFormController {
 
@@ -174,6 +174,7 @@ public class AdminFormController {
                 findReportsByDep();
             }
         });
+
         buttonDeleteDep.setOnAction(event -> {
             deleteDep();
             showAllDep();
@@ -218,7 +219,7 @@ public class AdminFormController {
             showAllActivity();
         });
         importInExcelButton.setOnAction(event -> {
-            exportToExcel();
+            //exportToExcel();
         });
 
 
@@ -256,8 +257,6 @@ public class AdminFormController {
             });
             return row;
         });
-
-
 
         NameColumnEventInTable
                 .setCellValueFactory(new PropertyValueFactory<Report, String>("activity_id") {
@@ -353,6 +352,11 @@ public class AdminFormController {
         tableViewReportsTable2.setItems(reports);
 
     }
+
+   // private void exportToExcel() {
+   //     DBManager manager = DBManager.getInstance();
+   //     manager.exportToExcel(clickedRow.getId());
+   // }
 
     private void findReport(int id) {
         DBManager manager = DBManager.getInstance();
@@ -457,8 +461,5 @@ public class AdminFormController {
         if (tableTeacher.getSelectionModel().getSelectedItem() != null)
             manager.deleteTeacher(tableTeacher.getSelectionModel().getSelectedItem());
     }
-    private void exportToExcel() {
-        DBManager manager = DBManager.getInstance();
-        manager.exportToExcel();
-    }
+
 }
