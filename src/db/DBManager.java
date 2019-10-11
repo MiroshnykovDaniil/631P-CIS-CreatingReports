@@ -29,18 +29,18 @@ public class DBManager {
 
 	private FileInputStream fis;
 	private static DBManager instance;
-	private String url = "jdbc:postgresql://localhost:5432/postgres";
-	private String login = "postgres";
-	private String pass = "admin";
+	private String url = "jdbc:mysql://localhost/cis";
+	private String login = "root";
+	private String pass = "";
 
 	// ======== QUERIES ==============
 	
 	//USER
-	private static final String SQL_FIND_USER_BY_LOGIN = "SELECT * FROM users WHERE name=?";
-	private static final String SQL_FIND_USER_BY_ID = "SELECT * FROM users WHERE id=?";
-	private static final String SQL_INSERT_USER="INSERT INTO users(name, email, password, authority_id) VALUES (?,?,?,?)";
-	private static final String SQL_UPDATE_USER="UPDATE users SET name=?,email=?,password=?,authority_id=? WHERE id=?";
-	private static final String SQL_DELETE_USER="DELETE FROM users WHERE name=?";
+	private static final String SQL_FIND_USER_BY_LOGIN = "SELECT * FROM user WHERE name=?";
+	private static final String SQL_FIND_USER_BY_ID = "SELECT * FROM user WHERE id=?";
+	private static final String SQL_INSERT_USER="INSERT INTO user(name, email, password, authority_id) VALUES (?,?,?,?)";
+	private static final String SQL_UPDATE_USER="UPDATE user SET name=?,email=?,password=?,authority_id=? WHERE id=?";
+	private static final String SQL_DELETE_USER="DELETE FROM user WHERE name=?";
 	
 	private static final String SQL_GET_ALL_TEACHERS="SELECT * FROM teacher";
 	private static final String SQL_GET_TEACHER = "SELECT * FROM teacher WHERE id = ?";
@@ -91,7 +91,7 @@ public class DBManager {
 
 	private DBManager() {
 		try {
-			Class.forName("org.postgresql.Driver");
+			Class.forName("com.mysql.jdbc.Driver");
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -218,6 +218,28 @@ public class DBManager {
 			close(con, st, rs);
 		}
 		return user;
+	}
+
+	public Teacher findTeacherById(Long id) {
+		Teacher teacher = null;
+		Connection con = null;
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		try {
+			con = getConnection();
+			st = con.prepareStatement(SQL_GET_TEACHER);
+			st.setLong(1, id);
+			rs = st.executeQuery();
+			if (rs.next()) {
+				teacher = getTeacher(rs);
+			}
+			con.commit();
+		} catch (SQLException e) {
+			rollback(con);
+		} finally {
+			close(con, st, rs);
+		}
+		return teacher;
 	}
 
 	public Reports findReportById(long id) {
@@ -842,7 +864,7 @@ public class DBManager {
                 Report r = getReport(rs);
                 reports = DBManager.getInstance().getReportsById((int) r.getReport_id());
 				Activity a = DBManager.getInstance().getActivityById(r.getActivity_id());
-				User u = DBManager.getInstance().findUserById(r.getUser_id());
+				Teacher u = DBManager.getInstance().findTeacherById(r.getUser_id());
 
 				row.createCell(0).setCellValue(r.getId());
 				row.createCell(1).setCellValue(a.getName());
