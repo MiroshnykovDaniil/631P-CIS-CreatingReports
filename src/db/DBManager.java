@@ -842,12 +842,12 @@ public class DBManager {
                 Report r = getReport(rs);
                 reports = DBManager.getInstance().getReportsById((int) r.getReport_id());
 				Activity a = DBManager.getInstance().getActivityById(r.getActivity_id());
-				User u = DBManager.getInstance().findUserById(r.getUser_id());
+				Teacher t = DBManager.getInstance().getTeacherById(r.getUser_id());
 
 				row.createCell(0).setCellValue(r.getId());
 				row.createCell(1).setCellValue(a.getName());
 				row.createCell(2).setCellValue(rs.getString("date"));
-				row.createCell(3).setCellValue(u.getName());
+				row.createCell(3).setCellValue(t.getName());
 				row.createCell(4).setCellValue(r.getStatus());
 				index++;
 			}
@@ -1019,6 +1019,28 @@ public class DBManager {
 		}
 		return department;
 	}
+
+    public Teacher getTeacherById(long id) {
+        Teacher teacher = null;
+        Connection con = null;
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        try {
+            con = getConnection();
+            st = con.prepareStatement(SQL_GET_TEACHER);
+            st.setLong(1, id);
+            rs = st.executeQuery();
+            if (rs.next()) {
+                teacher = getTeacher(rs);
+            }
+            con.commit();
+        } catch (SQLException e) {
+            rollback(con);
+        } finally {
+            close(con, st, rs);
+        }
+        return teacher;
+    }
 
 	public List<Department> getDepartment() {
 		List<Department> department = new ArrayList<>();
